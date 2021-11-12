@@ -6,8 +6,9 @@
 #include "../include/FCnetwork.h"
 
 // Set the variables
-void FCnetwork::initialise(int N) {
+void FCnetwork::initialise(int N, mt19937 rand_gen) {
 
+    this->rand_gen = rand_gen;
     this->N = N;
     this->edges = 0;
 

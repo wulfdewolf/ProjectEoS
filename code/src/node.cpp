@@ -39,7 +39,7 @@ int Node::random_message(mt19937 gen) {
 }
 
 // Receive a message
-int Node::receive_message(Signal* message, float noise, mt19937 gen) {
+int Node::receive_message(Signal* message, double noise, mt19937 gen) {
     int n_signals = this->signals.size();
     int closest = 0;
 
@@ -51,10 +51,10 @@ int Node::receive_message(Signal* message, float noise, mt19937 gen) {
 
     } else {
         // Calculate distances and keep track of closest one
-        float min = numeric_limits<float>::infinity();
+        double min = numeric_limits<double>::infinity();
         int closest = 0;
         for(int i=0; i < n_signals; i++) {
-            float dist = signals[i]->acoustic_distance(message);
+            double dist = this->signals[i]->acoustic_distance(message);
             if(dist < min) {
                 min = dist;
                 closest = i;
@@ -71,10 +71,10 @@ int Node::receive_message(Signal* message, float noise, mt19937 gen) {
 bool Node::receive_answer(Signal* answer, int original) {
 
     // Calculate distances and keep track of closest one
-    float min = numeric_limits<float>::infinity();
+    double min = numeric_limits<double>::infinity();
     int closest = 0;
     for(int i=0; i < this->signals.size(); i++) {
-        float dist = signals[i]->acoustic_distance(answer);
+        double dist = this->signals[i]->acoustic_distance(answer);
         if(dist < min) {
             min = dist;
             closest = i;
@@ -90,14 +90,13 @@ bool Node::receive_answer(Signal* answer, int original) {
 }
 
 // Receive a success/fail answer
-void Node::receive_success(bool success, int original, Signal* message, float noise, mt19937 gen) {
+void Node::receive_success(bool success, int original, Signal* message, double noise, mt19937 gen) {
 
     if(success){
         this->signals[original]->shift_closer(message, gen);
         this->signals[original]->success++;
     } else {
         if(this->signals[original]->used != 0 && (this->signals[original]->success / this->signals[original]->used) > 0.5) {
-
             // If threshold is achieved, create a new signal
             Signal* new_signal = new Signal(message, noise, gen);
             this->signals.push_back(new_signal);
@@ -115,8 +114,7 @@ void Node::update_signals(mt19937 gen) {
 
     // Remove bad vowels
     for(int i=0; i < this->signals.size(); i++) {
-        if(this->signals[i]->used > 5 && (this->signals[i]->success / this->signals[i]->used) < 0.6) {
-                cout << "deleting: " << this->signals[i]->used << "\n";
+        if(this->signals[i]->used > 5.0 && (this->signals[i]->success / this->signals[i]->used) < 0.7) {
                 this->delete_signal(i);
         }
     }
@@ -125,8 +123,7 @@ void Node::update_signals(mt19937 gen) {
     for(int i=0; i < this->signals.size(); i++) {
         for(int j=0; j < this->signals.size(); j++) {
             if(i != j) {
-                if(this->signals[i]->acoustic_distance(this->signals[j]) < 10 || this->signals[i]->articulatory_distance(this->signals[j]) < 0.001) {
-                    cout << "merging" << "\n";
+                if(this->signals[i]->acoustic_distance(this->signals[j]) < 10.0 || this->signals[i]->articulatory_distance(this->signals[j]) < 0.1) {
                     this->merge_signals(i, j);
                 };
             }
@@ -136,7 +133,6 @@ void Node::update_signals(mt19937 gen) {
     // Add new vowels with a small probability
     uniform_real_distribution<> prob_dis(0, 1);
     if(prob_dis(gen) <= 0.01) {
-        cout << "adding" << "\n";
         Signal* new_signal = new Signal(gen);
         this->signals.push_back(new_signal);
     }

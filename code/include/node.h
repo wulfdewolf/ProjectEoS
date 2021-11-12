@@ -34,13 +34,13 @@ class Node {
     int random_message(mt19937 gen);
 
     // Receive a message
-    int receive_message(Signal* message, float noise, mt19937 gen);
+    int receive_message(Signal* message, double noise, mt19937 gen);
 
     // Receive an answer
     bool receive_answer(Signal* message, int original);
 
     // Receive a success/fail answer
-    void receive_success(bool success, int original, Signal* message, float noise, mt19937 gen);
+    void receive_success(bool success, int original, Signal* message, double noise, mt19937 gen);
 
     // Update signals
     void update_signals(mt19937 gen);

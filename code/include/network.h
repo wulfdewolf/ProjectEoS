@@ -17,6 +17,9 @@ class Network {
     // Nodes
     int N, edges;
 
+    // Random number generator
+    mt19937 rand_gen;
+
     // Vector with nodes
     vector<Node*> network;
 
@@ -33,7 +36,7 @@ class Network {
     void connect(int A, int B);
 
     // Imitation game simulation
-    void simulation(string filename, int iterations, float noise);
+    void simulation(string filename, int iterations, double noise);
 
     // Free the allocated memory
     void free_memory();

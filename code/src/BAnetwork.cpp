@@ -6,8 +6,9 @@
 #include "../include/BAnetwork.h"
 
 // Set the variables
-void BAnetwork::initialise(int N) {
+void BAnetwork::initialise(int N, mt19937 rand_gen) {
 
+    this->rand_gen = rand_gen;
     this->N = N;
     this->edges = 6;
 
@@ -25,15 +26,9 @@ void BAnetwork::initialise(int N) {
 
 // Generate the network
 void BAnetwork::generate() {
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> prob_dis(0, 1); //uniform distribution between 0 and 1
-
+    std::uniform_real_distribution<> prob_dis(0, 1);
 
     while(this->network.size() < this->N) {
-
-        // Random node generator distribution
         std::uniform_int_distribution<> node_dis(0, (this->network.size())-1); 
 
         // New node
@@ -50,7 +45,7 @@ void BAnetwork::generate() {
 
             // Random node
             
-            int node_number = node_dis(gen);
+            int node_number = node_dis(this->rand_gen);
             Node* node = this->network[node_number];
 
             // If this node isn't connected to the new one yet
@@ -58,12 +53,12 @@ void BAnetwork::generate() {
 
                 // Calculate the probability of connecting
                 int degree_node = node->edges.size();
-                float degree_total = (this->edges)*2;
-                float connect_probability = degree_node / degree_total;
+                double degree_total = (this->edges)*2;
+                double connect_probability = degree_node / degree_total;
 
 
                 // Connect if the chances dictate it
-                if(connect_probability >= prob_dis(gen)) {
+                if(connect_probability >= prob_dis(this->rand_gen)) {
 
                     connect(new_node->number, node_number);
                     count--;

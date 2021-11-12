@@ -13,7 +13,7 @@ class BAnetwork : public Network {
     public: 
 
     // Set the variables
-    void initialise(int N);
+    void initialise(int N, mt19937 rand_gen);
 
     // Generate the network
     void generate();

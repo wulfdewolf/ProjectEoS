@@ -76,15 +76,12 @@ void Network::connect(int A, int B) {
 }
 
 // Run the imitation game simulation
-void Network::simulation(string filename, int iterations, float noise) {
+void Network::simulation(string filename, int iterations, double noise) {
+    uniform_real_distribution<> prob_dis(0, 1);
+    uniform_int_distribution<> node_dis(0, (this->network.size())-1); 
 
     // Calculate running time of this function
     auto start = high_resolution_clock::now(); 
-
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_real_distribution<> prob_dis(0, 1);
-    uniform_int_distribution<> node_dis(0, (this->network.size())-1); 
 
     // File to write distributions to
     ofstream file(filename);
@@ -93,37 +90,37 @@ void Network::simulation(string filename, int iterations, float noise) {
     for(int i = 0; i < iterations; i++) {
 
         // Select sender
-        Node* sender = this->network[node_dis(gen)];
+        Node* sender = this->network[node_dis(this->rand_gen)];
 
         // Select receiver
         uniform_int_distribution<> receiver_dis(0, (sender->edges.size())-1); 
-        Node* receiver = this->network[sender->edges[receiver_dis(gen)]];
+        Node* receiver = this->network[sender->edges[receiver_dis(this->rand_gen)]];
 
         /*
             Play the imitation game
         */
 
         // Create message from prototype
-        int message_prototype = sender->random_message(gen);
-        Signal* message = new Signal(sender->signals[message_prototype], noise, gen, true);
+        int message_prototype = sender->random_message(this->rand_gen);
+        Signal* message = new Signal(sender->signals[message_prototype], noise, this->rand_gen, true);
 
         // Send to receiver and create answer from prototype
-        int answer_prototype = receiver->receive_message(message, noise, gen);
-        Signal* answer = new Signal(receiver->signals[answer_prototype], noise, gen, true);
+        int answer_prototype = receiver->receive_message(message, noise, this->rand_gen);
+        Signal* answer = new Signal(receiver->signals[answer_prototype], noise, this->rand_gen, true);
 
         // Receive replication
         bool success = sender->receive_answer(answer, message_prototype);
         
         // Receive success
-        receiver->receive_success(success, answer_prototype, message, noise, gen);
+        receiver->receive_success(success, answer_prototype, message, noise, this->rand_gen);
 
         // Clean up
         delete(message);
         delete(answer);
 
         // Let both update their signals
-        sender->update_signals(gen);
-        receiver->update_signals(gen);
+        sender->update_signals(this->rand_gen);
+        receiver->update_signals(this->rand_gen);
 
         // Write agent signals
         for(int a=0; a < this->N; a++) {
