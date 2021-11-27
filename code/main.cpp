@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 
     // Parameters
     int N = 20;
-    int I = 100000;
+    int I = 50;
     double noise = 0.1;
 
     // Randomness

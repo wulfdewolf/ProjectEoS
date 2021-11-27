@@ -42,11 +42,11 @@ class Node {
     // Receive a success/fail answer
     void receive_success(bool success, int original, Signal* message, double noise, mt19937 gen);
 
-    // Update signals
-    void update_signals(mt19937 gen);
+    // Remove bad signals
+    void remove_bad_vowels(); 
 
     // Merge signals
-    void merge_signals(int i, int j);
+    bool merge_signals(double noise);
 
     // Delete a signal
     void delete_signal(int i);

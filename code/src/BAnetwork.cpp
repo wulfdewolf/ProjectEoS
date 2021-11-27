@@ -26,10 +26,10 @@ void BAnetwork::initialise(int N, mt19937 rand_gen) {
 
 // Generate the network
 void BAnetwork::generate() {
-    std::uniform_real_distribution<> prob_dis(0, 1);
+    uniform_real_distribution<> prob_dis(0, 1);
 
     while(this->network.size() < this->N) {
-        std::uniform_int_distribution<> node_dis(0, (this->network.size())-1); 
+        uniform_int_distribution<> node_dis(0, (this->network.size())-1); 
 
         // New node
         Node* new_node = new Node(this->network.size());

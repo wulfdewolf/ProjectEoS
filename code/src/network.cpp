@@ -100,6 +100,18 @@ void Network::simulation(string filename, int iterations, double noise) {
             Play the imitation game
         */
 
+        // Sometimes add a distributed new signal 
+        if(prob_dis(this->rand_gen) <= 0.01) {
+            cout << "new\n";
+            sender->signals.push_back(new Signal(this->rand_gen, sender->signals));
+        }
+
+        // Merge signals until nothing is mergeable
+        bool merged = true;
+        while(merged) {
+            merged = sender->merge_signals(noise);
+        }
+
         // Create message from prototype
         int message_prototype = sender->random_message(this->rand_gen);
         Signal* message = new Signal(sender->signals[message_prototype], noise, this->rand_gen, true);
@@ -118,12 +130,15 @@ void Network::simulation(string filename, int iterations, double noise) {
         delete(message);
         delete(answer);
 
-        // Let both update their signals
-        sender->update_signals(this->rand_gen);
-        receiver->update_signals(this->rand_gen);
+        // Allow agents to clean up their signals
+        if(prob_dis(this->rand_gen) <= 0.1) {
+            for(int a = 0; a < this->N; a++) {
+                this->network[a]->remove_bad_vowels();
+            }
+        }
 
         // Write agent signals
-        for(int a=0; a < this->N; a++) {
+        for(int a = 0; a < this->N; a++) {
             for(int s=0; s < this->network[a]->signals.size(); s++) {
                 file << i;
                 file << " " << a;
@@ -131,8 +146,8 @@ void Network::simulation(string filename, int iterations, double noise) {
                 file << " " << s;
                 file << " " << this->network[a]->signals[s]->success;
                 file << " " << this->network[a]->signals[s]->used;
-                file << " " << hertz_to_bark(this->network[a]->signals[s]->F1);
-                file << " " << hertz_to_bark(this->network[a]->signals[s]->eF2) << endl;
+                file << " " << this->network[a]->signals[s]->F1;
+                file << " " << this->network[a]->signals[s]->eF2 << endl;
             }
         }
     }
