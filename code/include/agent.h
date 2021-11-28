@@ -1,5 +1,5 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef agent_H
+#define agent_H
 
 #include <stdio.h>
 #include <bits/stdc++.h> 
@@ -7,8 +7,8 @@
 #include "signal.h"
 using namespace std;
 
-// NODE CLASS
-class Node {
+// AGENT CLASS
+class Agent {
     
     public: 
 
@@ -22,9 +22,9 @@ class Node {
     vector<Signal*> signals;
 
     // Constructor
-    Node(int init_number) { number = init_number; };
+    Agent(int init_number) { number = init_number; };
 
-    // Check if nodes are connected
+    // Check if agents are connected
     bool connected(int number);
 
     // Add an edge
@@ -34,7 +34,7 @@ class Node {
     int random_message(mt19937 gen);
 
     // Receive a message
-    int receive_message(Signal* message, double noise, mt19937 gen);
+    int receive_message(Signal* message, mt19937 gen);
 
     // Receive an answer
     bool receive_answer(Signal* message, int original);
@@ -53,6 +53,9 @@ class Node {
 
     // Delete all signals
     void delete_signals();
+
+    // Writing method
+    void write(ostream& outs, int iteration, int agent);
 };
 
 #endif

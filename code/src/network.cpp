@@ -13,23 +13,23 @@ void Network::read_network(string filename) {
     // Network initialisation from file
     infile >> this->N >> this->edges;
 
-    // Create all the nodes
-    Node* new_node;
+    // Create all the agents
+    Agent* new_agent;
     for(int i = 0; i < this->N; i++) {
-        new_node = new Node(i);
-        this->network.push_back(new_node);
+        new_agent = new Agent(i);
+        this->network.push_back(new_agent);
     }
 
     // Go over the file  to create all the edges
-    int nodeA_number, nodeB_number;
-    Node* nodeA;
-    Node* nodeB;
-    while (infile >> nodeA_number >> nodeB_number) {
-        nodeA = this->network[nodeA_number];
-        nodeB = this->network[nodeB_number];
+    int agentA_number, agentB_number;
+    Agent* agentA;
+    Agent* agentB;
+    while (infile >> agentA_number >> agentB_number) {
+        agentA = this->network[agentA_number];
+        agentB = this->network[agentB_number];
 
-        if(!nodeA->connected(nodeB_number)) nodeA->connect(nodeB_number);
-        if(!nodeB->connected(nodeA_number)) nodeB->connect(nodeA_number);
+        if(!agentA->connected(agentB_number)) agentA->connect(agentB_number);
+        if(!agentB->connected(agentA_number)) agentB->connect(agentA_number);
     }
 }
 
@@ -43,18 +43,18 @@ void Network::print_network(string filename) {
 
     for (int i = 0; i < this->N; i++) {
 
-        Node* current_node = this->network[i];
+        Agent* current_agent = this->network[i];
 
-        for (int j = 0; j < current_node->edges.size(); j++) {
+        for (int j = 0; j < current_agent->edges.size(); j++) {
 
-            Node* connected_node = this->network[current_node->edges[j]];
+            Agent* connected_agent = this->network[current_agent->edges[j]];
 
-            file << current_node->number << " " << connected_node->number << endl;
+            file << current_agent->number << " " << connected_agent->number << endl;
         }
     }
 }
 
-// Check if nodes are connected
+// Check if agents are connected
 bool Network::connected(int A, int B) {
     bool AtoB = this->network[A]->connected(B);
     bool BtoA = this->network[B]->connected(A);
@@ -66,7 +66,7 @@ bool Network::connected(int A, int B) {
     else return AtoB;
 }
 
-// Connect two nodes
+// Connect two agents
 void Network::connect(int A, int B) {
 
     this->edges++;
@@ -76,9 +76,9 @@ void Network::connect(int A, int B) {
 }
 
 // Run the imitation game simulation
-void Network::simulation(string filename, int iterations, double noise) {
+void Network::simulation(string filename, int iterations, double noise, double new_signal_prob, double clean_prob) {
     uniform_real_distribution<> prob_dis(0, 1);
-    uniform_int_distribution<> node_dis(0, (this->network.size())-1); 
+    uniform_int_distribution<> agent_dis(0, (this->network.size())-1); 
 
     // Calculate running time of this function
     auto start = high_resolution_clock::now(); 
@@ -90,19 +90,18 @@ void Network::simulation(string filename, int iterations, double noise) {
     for(int i = 0; i < iterations; i++) {
 
         // Select sender
-        Node* sender = this->network[node_dis(this->rand_gen)];
+        Agent* sender = this->network[agent_dis(this->rand_gen)];
 
         // Select receiver
         uniform_int_distribution<> receiver_dis(0, (sender->edges.size())-1); 
-        Node* receiver = this->network[sender->edges[receiver_dis(this->rand_gen)]];
+        Agent* receiver = this->network[sender->edges[receiver_dis(this->rand_gen)]];
 
         /*
             Play the imitation game
         */
 
         // Sometimes add a distributed new signal 
-        if(prob_dis(this->rand_gen) <= 0.01) {
-            cout << "new\n";
+        if(prob_dis(this->rand_gen) <= new_signal_prob) {
             sender->signals.push_back(new Signal(this->rand_gen, sender->signals));
         }
 
@@ -114,11 +113,11 @@ void Network::simulation(string filename, int iterations, double noise) {
 
         // Create message from prototype
         int message_prototype = sender->random_message(this->rand_gen);
-        Signal* message = new Signal(sender->signals[message_prototype], noise, this->rand_gen, true);
+        Signal* message = new Signal(sender->signals[message_prototype], this->rand_gen, noise);
 
         // Send to receiver and create answer from prototype
-        int answer_prototype = receiver->receive_message(message, noise, this->rand_gen);
-        Signal* answer = new Signal(receiver->signals[answer_prototype], noise, this->rand_gen, true);
+        int answer_prototype = receiver->receive_message(message, this->rand_gen);
+        Signal* answer = new Signal(receiver->signals[answer_prototype], this->rand_gen, noise);
 
         // Receive replication
         bool success = sender->receive_answer(answer, message_prototype);
@@ -130,8 +129,8 @@ void Network::simulation(string filename, int iterations, double noise) {
         delete(message);
         delete(answer);
 
-        // Allow agents to clean up their signals
-        if(prob_dis(this->rand_gen) <= 0.1) {
+        // Allow agents to remove their signals
+        if(prob_dis(this->rand_gen) <= clean_prob) {
             for(int a = 0; a < this->N; a++) {
                 this->network[a]->remove_bad_vowels();
             }
@@ -139,16 +138,7 @@ void Network::simulation(string filename, int iterations, double noise) {
 
         // Write agent signals
         for(int a = 0; a < this->N; a++) {
-            for(int s=0; s < this->network[a]->signals.size(); s++) {
-                file << i;
-                file << " " << a;
-                file << " " << this->network[a]->signals.size();
-                file << " " << s;
-                file << " " << this->network[a]->signals[s]->success;
-                file << " " << this->network[a]->signals[s]->used;
-                file << " " << this->network[a]->signals[s]->F1;
-                file << " " << this->network[a]->signals[s]->eF2 << endl;
-            }
+            this->network[a]->write(file, i, a);
         }
     }
 

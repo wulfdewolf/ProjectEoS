@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <bits/stdc++.h> 
+
 #include "util.h"
+
 using namespace std;
 
 // SIGNAL CLASS
@@ -12,9 +14,13 @@ class Signal {
     
     public: 
 
-    // Characteristics
+    // Acoustic characteristics
     double F1 = 0.0;
-    double eF2 = 0.0;
+    double F2 = 0.0;
+    double F3 = 0.0;
+    double F4 = 0.0;
+
+    // Articulatory characteristics
     double h = 0.0;
     double r = 0.0;
     double p = 0.0;
@@ -26,10 +32,10 @@ class Signal {
     // Constructor: random 
     Signal(mt19937 gen) { 
         uniform_real_distribution<> prob_dis(0, 1);
-        h = prob_dis(gen);
-        r = prob_dis(gen);
-        p = prob_dis(gen);
-        to_acoustic();
+        this->h = prob_dis(gen);
+        this->r = prob_dis(gen);
+        this->p = prob_dis(gen);
+        this->to_acoustic();
     }
 
     // Constructor: random distributed
@@ -45,7 +51,7 @@ class Signal {
 
             // Calculate distance to all other signals
             for(int j = 0; j < others.size(); j++) {
-                tot_dist += acoustic_distance_from_char(others[j]->h, others[j]->r, others[j]->p, rd_h, rd_r, rd_p);
+                tot_dist += others[j]->acoustic_distance_to(rd_h, rd_r, rd_p);
             }
 
             // Keep track of the best one
@@ -67,42 +73,60 @@ class Signal {
 
 
     // Constructor: from acoustic characteristics
-    Signal(Signal* prototype, double noise, mt19937 gen) {
+    Signal(Signal* prototype, mt19937 gen) {
         h = 0.5;
         r = 0.5;
         p = 0.5;
         to_acoustic();
 
-        double min = acoustic_distance(prototype->F1, prototype->eF2, this->F1, this->eF2);
+        double min = prototype->acoustic_distance_to(this);
         double dist;
-        int stuck_count = 5;
-        do {
-            this->shift_closer(prototype, gen);
-            dist = acoustic_distance(prototype->F1, prototype->eF2, this->F1, this->eF2);
+        bool progress;
+        while(true) {
+            this->shift(prototype, gen);
+            dist = prototype->acoustic_distance_to(this);
             if(dist >= min) {
-                stuck_count--;
+                break;
             } else {
                 min = dist;
             }
-        } while(stuck_count != 0);
+        }
     };
 
     // Constructor: prototype replication
-    Signal(Signal* prototype, double noise_percentage, mt19937 gen, bool _) {
-        uniform_int_distribution<> noise_dis(-noise_percentage/2, noise_percentage/2);
+    Signal(Signal* prototype, mt19937 gen, double ac_noise, double ar_noise=0) {
+        uniform_int_distribution<> art_noise_dis(-ar_noise/2, ar_noise/2);
+        uniform_int_distribution<> noise_dis(-ac_noise/2, ac_noise/2);
 
-        // Add noise to F1
+        // Add noise to articulatory characteristics
+        this->h = prototype->h + art_noise_dis(gen);
+        this->r = prototype->r + art_noise_dis(gen);
+        this->p = prototype->p + art_noise_dis(gen);
+
+        // Calculate formants
+        this->to_acoustic();
+
+        // Add noise to formants 
         this->F1 = prototype->F1 + prototype->F1 * noise_dis(gen);
-
-        // Add noise to eF2
-        this->eF2 = prototype->eF2 + prototype->eF2 * noise_dis(gen);
+        this->F2 = prototype->F2 + prototype->F2 * noise_dis(gen);
+        this->F3 = prototype->F3 + prototype->F3 * noise_dis(gen);
+        this->F4 = prototype->F4 + prototype->F4 * noise_dis(gen);
     }
 
     // Calculate acoustic formants from articulatory characteristics
     void to_acoustic(); 
 
     // Shift closer to a given signal
-    void shift_closer(Signal* to, mt19937 gen);
+    void shift(Signal* to, mt19937 gen, bool away=false);
+
+    // Acoustic distance
+    double acoustic_distance_to(Signal* to);
+    double acoustic_distance_to(double to_h, double to_r, double to_p);
+    double articulatory_distance_to(Signal* to);
+
+    // Printing method
+    void write(ostream& outs, int iteration, int agent, int size, int signal);
 };
+
 
 #endif

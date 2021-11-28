@@ -1,22 +1,22 @@
 /*
 *
-*   NODE
+*   agent
 *   
 */
-#include "../include/node.h"
+#include "../include/agent.h"
 
-// Check if nodes are connected
-bool Node::connected(int number) {
+// Check if agents are connected
+bool Agent::connected(int number) {
    return count(this->edges.begin(), this->edges.end(),number) != 0;
 }
 
 // Add an edge
-void Node::connect(int number) {
+void Agent::connect(int number) {
     this->edges.push_back(number);
 }
 
 // Get a random message
-int Node::random_message(mt19937 gen) {
+int Agent::random_message(mt19937 gen) {
     int n_signals = this->signals.size();
     int signal_idx = 0;
 
@@ -39,14 +39,14 @@ int Node::random_message(mt19937 gen) {
 }
 
 // Receive a message
-int Node::receive_message(Signal* message, double noise, mt19937 gen) {
+int Agent::receive_message(Signal* message, mt19937 gen) {
     int n_signals = this->signals.size();
     int closest = 0;
 
     if(n_signals == 0) {
         
         // Generate a new signal based on the received signal
-        Signal* new_signal = new Signal(message, noise, gen);
+        Signal* new_signal = new Signal(message, gen);
         this->signals.push_back(new_signal);
 
     } else {
@@ -54,7 +54,7 @@ int Node::receive_message(Signal* message, double noise, mt19937 gen) {
         double min = numeric_limits<double>::infinity();
         int closest = 0;
         for(int i=0; i < n_signals; i++) {
-            double dist = acoustic_distance(message->F1, message->eF2, signals[i]->F1, signals[i]->eF2);
+            double dist = message->acoustic_distance_to(signals[i]);
             if(dist < min) {
                 min = dist;
                 closest = i;
@@ -68,13 +68,13 @@ int Node::receive_message(Signal* message, double noise, mt19937 gen) {
 }
 
 // Receive an answer
-bool Node::receive_answer(Signal* answer, int original) {
+bool Agent::receive_answer(Signal* answer, int original) {
 
     // Calculate distances and keep track of closest one
     double min = numeric_limits<double>::infinity();
     int closest = 0;
     for(int i=0; i < this->signals.size(); i++) {
-        double dist = acoustic_distance(answer->F1, answer->eF2, signals[i]->F1, signals[i]->eF2);
+        double dist = answer->acoustic_distance_to(signals[i]);
         if(dist < min) {
             min = dist;
             closest = i;
@@ -90,42 +90,46 @@ bool Node::receive_answer(Signal* answer, int original) {
 }
 
 // Receive a success/fail answer
-void Node::receive_success(bool success, int original, Signal* message, double noise, mt19937 gen) {
+void Agent::receive_success(bool success, int original, Signal* message, double noise, mt19937 gen) {
 
     if(success){
-        this->signals[original]->shift_closer(message, gen);
+        this->signals[original]->shift(message, gen);
         this->signals[original]->success++;
     } else {
         if(this->signals[original]->used != 0 && (this->signals[original]->success / this->signals[original]->used) > 0.5) {
-            // If threshold is achieved, create a new signal
-            Signal* new_signal = new Signal(message, noise, gen);
+
+            // If threshold is achieved, move away from the signal
+            this->signals[original]->shift(message, gen, true);
+
+            // And create a new signal that looks like the perceived one 
+            Signal* new_signal = new Signal(message, gen);
             this->signals.push_back(new_signal);
 
         } else {
 
             // Otherwise just shift closer
-            this->signals[original]->shift_closer(message, gen);
+            this->signals[original]->shift(message, gen);
         }
     }
 }
 
 // Remove bad signals
-void Node::remove_bad_vowels() {
+void Agent::remove_bad_vowels() {
     for(int i=0; i < this->signals.size(); i++) {
         if(this->signals[i]->used > 5.0 && (this->signals[i]->success / this->signals[i]->used) < 0.7) {
-                this->delete_signal(i);
+            this->delete_signal(i);
         }
     }
 }
 
 // Merge signals
-bool Node::merge_signals(double noise) {
+bool Agent::merge_signals(double noise) {
     for(int i=0; i < this->signals.size(); i++) {
         for(int j=0; j < this->signals.size(); j++) {
             if(i != j) {
-                if(acoustic_distance(this->signals[i]->F1, this->signals[j]->eF2, this->signals[j]->F1, this->signals[j]->eF2) < (log(1+noise)/0.1719-log(1-noise)/0.1719) 
-                   || articulatory_distance(this->signals[i]->h, this->signals[i]->r, this->signals[i]->p, this->signals[j]->h, this->signals[j]->r, this->signals[j]->p) < 0.17) {
-                    // 0.17 is the minimum distance achievable by shifting phonemes
+                if(this->signals[i]->acoustic_distance_to(this->signals[j]) < (log(1+noise)/0.1719-log(1-noise)/0.1719) 
+                   || this->signals[i]->articulatory_distance_to(this->signals[j]) < 0.17) {
+                     // 0.17 is the minimum distance achievable by shifting phonemes
 	                 // RelBark(1+AmbNoise)-RelBark(1-AmbNoise) is the maximum distance a phoneme can be shifted by ambient noise
                     if((this->signals[i]->used == 0) || (this->signals[j]->used != 0 && this->signals[i]->success / this->signals[i]->used < this->signals[j]->success < this->signals[j]->used)) {
                         this->signals[j]->success += this->signals[i]->success;
@@ -145,14 +149,21 @@ bool Node::merge_signals(double noise) {
 }
 
 // Delete signal
-void Node::delete_signal(int i) {
+void Agent::delete_signal(int i) {
     delete(this->signals[i]);
     this->signals.erase(this->signals.begin() + i);
 }
 
 // Delete all signals
-void Node::delete_signals() {
+void Agent::delete_signals() {
     for(int i = 0; i < this->signals.size(); i++) {
         this->delete_signal(i);
+    }
+}
+
+// Printing method
+void Agent::write(ostream& outs, int iteration, int agent) {
+    for(int s = 0; s < this->signals.size(); s++) {
+        this->signals[s]->write(outs, iteration, agent, this->signals.size(), s);
     }
 }
