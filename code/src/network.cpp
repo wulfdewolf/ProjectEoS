@@ -113,10 +113,12 @@ void Network::simulation(string filename, int iterations, double noise, double n
 
         // Create message from prototype
         int message_prototype = sender->random_message(this->rand_gen);
+        cout << "PROTOTYPE MESSAGE= " << message_prototype << "\n";
         Signal* message = new Signal(sender->signals[message_prototype], this->rand_gen, noise);
 
         // Send to receiver and create answer from prototype
         int answer_prototype = receiver->receive_message(message, this->rand_gen);
+        cout << "PROTOTYPE ANSWER= " << answer_prototype << "\n";
         Signal* answer = new Signal(receiver->signals[answer_prototype], this->rand_gen, noise);
 
         // Receive replication

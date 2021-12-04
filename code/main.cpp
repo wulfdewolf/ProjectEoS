@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 
     // Parameters
     int N = 20;
-    int I = 10000;
+    int I = 20000;
     double noise = 0.1;
     double new_signal_prob = 0.01;
     double clean_prob = 0.1;
@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
     mt19937 rand_gen(seed);
 
     // Network
-    FCnetwork network;
+    BAnetwork network;
     try {
 
         network.initialise(N, rand_gen);
