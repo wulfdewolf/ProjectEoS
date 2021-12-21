@@ -1,23 +1,17 @@
 #include "../include/util.h"
 
 double bark_to_hertz(double bark) {
-	//if ( bark < 2.0 )
-	//{
-		//return ( bark*110.0+51.0);
-	//}
-	//else
-		//return ( 271.32*exp( (bark-2.0)*0.1719 ) );
-    return 600.0 * sinh(bark / 6.0);
+    double _bark = bark;
+	if(bark < 2.0) _bark = (bark - 0.3) / 0.85;
+    if(bark > 20.1) _bark = (bark + 4.422) / 1.22;
+    return (_bark + 0.53) / (26.28 - _bark);
 }
 
 double hertz_to_bark(double hertz) {
-	//if ( hertz < 271.32 )
-	//{
-		//return (( hertz-51.0)/110.0);
-	//}
-	//else
-		//return ( log( hertz/271.32 )/0.1719 + 2.0); //Unofficial formula
-    return 6.0 * asinh(hertz / 600.0);
+    double bark = ((26.81 * hertz) / (1960.0 + hertz)) - 0.53;
+	if(bark < 2.0) return bark + 0.15 * (2.0 - bark);
+    else if(bark > 20.1) return bark + 0.22 * (bark - 20.1);
+    else return bark;
 }
 
 void normalise(double *h, double *r, double *p) {
