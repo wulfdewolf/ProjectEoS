@@ -90,7 +90,6 @@ bool Agent::receive_answer(Signal* answer, int original) {
 
 // Receive a success/fail answer
 void Agent::receive_success(bool success, int original, Signal* message, double noise, mt19937 gen) {
-    cout << original << "\n";
 
     if(success){
         this->signals[original]->shift(message, gen);

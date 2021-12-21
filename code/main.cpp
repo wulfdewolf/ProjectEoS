@@ -12,8 +12,8 @@
 int main(int argc, char* argv[]) {
 
     // Parameters
-    int N = 20;
-    int I = 20000;
+    int N = 100;
+    int I = 10000;
     double noise = 0.1;
     double new_signal_prob = 0.01;
     double clean_prob = 0.1;
