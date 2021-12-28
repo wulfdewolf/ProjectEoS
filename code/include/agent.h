@@ -4,13 +4,22 @@
 #include <stdio.h>
 #include <bits/stdc++.h> 
 #include <limits>
+#include <algorithm>
 #include "signal.h"
 using namespace std;
 
 // AGENT CLASS
 class Agent {
-    
-    public: 
+public: 
+
+    // Initialisor
+    // -----------------------------------------------
+
+    Agent(int init_number) { number = init_number; };
+
+
+    // Fields
+    // -----------------------
 
     // Number
     int number;
@@ -21,8 +30,9 @@ class Agent {
     // Signals 
     vector<Signal*> signals;
 
-    // Constructor
-    Agent(int init_number) { number = init_number; };
+
+    // Methods
+    // --------------------------------------------------------------------------------------------
 
     // Check if agents are connected
     bool connected(int number);
@@ -48,11 +58,17 @@ class Agent {
     // Merge signals
     bool merge_signals(double noise);
 
+    // Calculate repertoire energy
+    double repertoire_energy();
+
+    // Reset repertoire
+    void reset_repertoire();
+
     // Delete a signal
     void delete_signal(int i);
 
-    // Delete all signals
-    void delete_signals();
+    // Free allocated memory
+    void free();
 
     // Writing method
     void write(ostream& outs, int iteration, int agent);

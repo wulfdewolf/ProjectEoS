@@ -9,15 +9,12 @@ using namespace std;
 
 // BARABASI ALBERT NETWORK CLASS
 class BAnetwork : public Network {
+public: 
 
-    public: 
+    // Initialisor
+    // -----------------------------------------------
 
-    // Set the variables
-    void initialise(int N, mt19937 rand_gen);
-
-    // Generate the network
-    void generate();
-
+    BAnetwork(int population_size, mt19937 rand_gen, string filename);
 };
 
 #endif

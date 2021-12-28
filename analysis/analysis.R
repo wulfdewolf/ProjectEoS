@@ -3,37 +3,47 @@ library(igraph)
 library(ggnet)
 library(network)
 
-# Get agents' repertoires
-data = read.table("~/Documents/study/year2/EOS/ProjectEoS/code/results.txt", quote="\"", comment.char="")
-colnames(data) = c("iteration", "agent", "size", "signal", "success", "used", "F1", "F2")
-tot = data[data$iteration == 9999,]
-#tot$agent = tot$agent+1
+# Repertoires
+repertoires = read.table("~/Documents/study/year2/EOS/ProjectEoS/code/repertoires_results.txt", quote="\"", comment.char="")
+colnames(repertoires) = c("iteration", "agent", "size", "signal", "success", "used", "F1", "F2")
+repertoires = repertoires[repertoires$iteration == 5000,] # --> select iteration
+repertoires$agent = repertoires$agent+1
 
-# Get agents' edges
+# Network
 edges = read.table("~/Documents/study/year2/EOS/ProjectEoS/code/network.txt", quote="\"", comment.char="")
 edges = edges[-1,]
 
+# Statistics
+statistics = read.table("~/Documents/study/year2/EOS/ProjectEoS/code/statistics_results.txt", quote="\"", comment.char="")
+colnames(statistics) = c("success", "size", "energy")
+
+#----------------------------------------------------------------------------------------------------------------------------
 # Combined repertoires
-ggplot(tot, aes(x=F2, y=F1)) +
+
+ggplot(repertoires, aes(x=F2, y=F1)) +
   scale_y_reverse() +
   scale_x_reverse() +
   geom_point() +
-  labs(x=expression("F'"[2] (Bark)), y=expression("F"[1] (Bark)), title=paste(as.character(max(tot$iteration)+1),"Games"))
+  labs(x=expression("F'"[2] (Bark)), y=expression("F"[1] (Bark)), title=paste(as.character(max(repertoires$iteration)),"Games"))
 ggsave("analysis/plots/FC_10000.pdf", device="pdf")
 
+#----------------------------------------------------------------------------------------------------------------------------
 # Separated repertoires
+
 agent_labeller = function(variable, value) {
   return(paste("Agent ", as.character(value+1), " (", as.character(table(edges[1])[value]), ")"))
 }
-ggplot(tot, aes(x=F2, y=F1)) +
+ggplot(repertoires, aes(x=F2, y=F1)) +
   facet_wrap(~ agent, labeller=agent_labeller) +
   scale_y_reverse() +
   scale_x_reverse() +
   geom_point() +
-  labs(x=expression("F'"[2] (Bark)), y=expression("F"[1] (Bark)), title=paste(as.character(max(tot$iteration)+1),"Games"))
+  labs(x=expression("F'"[2] (Bark)), y=expression("F"[1] (Bark)), title=paste(as.character(max(tot$iteration)),"Games"))
 ggsave("analysis/plots/BA_80000_split.pdf", device="pdf")
 
+#----------------------------------------------------------------------------------------------------------------------------
 # Network
+
 net = as.matrix(get.adjacency(graph.data.frame(edges)))
 network_plot = network(net)
 ggnet2(network_plot, label=TRUE, mode="circle") +
@@ -55,7 +65,29 @@ ggplot(net.degree.histogram, aes(x = net.degrees, y = Freq)) +
   theme_bw()
 ggsave("analysis/plots/net_degree.pdf", device="pdf")
 
-# Repertoire sizes
-ggplot(aggregate(. ~ agent, data = tot, FUN = tail, 1), aes(x=as.factor(agent), y=size)) +
-  geom_bar(stat="identity") +
-  labs(x="Agent", y="Repertoire size")
+
+#----------------------------------------------------------------------------------------------------------------------------
+# Success distribution
+
+ggplot(statistics, aes(x=success)) +
+    geom_histogram(binwidth=.005, colour="black", fill="white") +
+    labs(x = "", y="", title=paste(as.character(max(repertoires$iteration)),"Games"))
+ggsave("analysis/plots/success_distribution.pdf", device="pdf")
+
+
+#----------------------------------------------------------------------------------------------------------------------------
+# Size distribution
+
+ggplot(statistics, aes(x=size)) +
+    geom_histogram(binwidth=.1, colour="black", fill="white")
+    labs(x = "", y="", title=paste(as.character(max(repertoires$iteration)),"Games"))
+ggsave("analysis/plots/size_distribution.pdf", device="pdf")
+
+
+#----------------------------------------------------------------------------------------------------------------------------
+# Energy distribution
+
+ggplot(statistics, aes(x=energy)) +
+    geom_histogram(binwidth=.1, colour="black", fill="white")
+    labs(x = "", y="", title=paste(as.character(max(repertoires$iteration)),"Games"))
+ggsave("analysis/plots/energy_distribution.pdf", device="pdf")

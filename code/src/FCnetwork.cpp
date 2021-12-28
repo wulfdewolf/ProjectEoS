@@ -5,27 +5,21 @@
 */
 #include "../include/FCnetwork.h"
 
-// Set the variables
-void FCnetwork::initialise(int N, mt19937 rand_gen) {
+FCnetwork::FCnetwork(int population_size, mt19937 rand_gen, string filename) : Network(population_size, rand_gen, 0) {
 
-    this->rand_gen = rand_gen;
-    this->N = N;
-    this->edges = 0;
-
-    // Fill the network with agents
-    for(int i = 0; i < N; i++) {
+    // Initialisation
+    for(int i = 0; i < population_size; i++) {
         Agent* new_agent = new Agent(i);
-        this->network.push_back(new_agent);
+        network.push_back(new_agent);
     }
-}
 
-// Generate the network
-void FCnetwork::generate() {
-
-    // Connect all agents with all other agents
-    for(int i=0; i < this->N; i++) {
-        for(int j=0; j < this->N; j++) {
-            if(i != j && !connected(this->network[i]->number, this->network[j]->number)) connect(this->network[i]->number, this->network[j]->number);
+    // Random connection
+    for(int i=0; i < population_size; i++) {
+        for(int j=0; j < population_size; j++) {
+            if(i != j && !connected(network[i]->number, network[j]->number)) connect(network[i]->number, network[j]->number);
         }
     }
+
+    // Write to file
+    write_network(filename);
 }

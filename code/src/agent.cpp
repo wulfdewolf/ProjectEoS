@@ -5,26 +5,29 @@
 */
 #include "../include/agent.h"
 
+// Methods
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 // Check if agents are connected
 bool Agent::connected(int number) {
-   return count(this->edges.begin(), this->edges.end(),number) != 0;
+   return count(edges.begin(), edges.end(),number) != 0;
 }
 
 // Add an edge
 void Agent::connect(int number) {
-    this->edges.push_back(number);
+    edges.push_back(number);
 }
 
 // Get a random message
 int Agent::random_message(mt19937 gen) {
-    int n_signals = this->signals.size();
+    int n_signals = signals.size();
     int signal_idx = 0;
 
     if(n_signals == 0) {
 
         // Generate a random new signal
         Signal* new_signal = new Signal(gen);
-        this->signals.push_back(new_signal);
+        signals.push_back(new_signal);
 
     } else {
 
@@ -34,20 +37,20 @@ int Agent::random_message(mt19937 gen) {
     }
 
     // Increase signal used counter
-    this->signals[signal_idx]->used++;
+    signals[signal_idx]->used++;
     return signal_idx;
 }
 
 // Receive a message
 int Agent::receive_message(Signal* message, mt19937 gen) {
-    int n_signals = this->signals.size();
+    int n_signals = signals.size();
     int closest = 0;
 
     if(n_signals == 0) {
         
         // Generate a new signal based on the received signal
         Signal* new_signal = new Signal(message, gen);
-        this->signals.push_back(new_signal);
+        signals.push_back(new_signal);
 
     } else {
         // Calculate distances and keep track of closest one
@@ -62,7 +65,7 @@ int Agent::receive_message(Signal* message, mt19937 gen) {
     }
 
     // Increase signal used counter
-    this->signals[closest]->used++;
+    signals[closest]->used++;
     return closest;
 }
 
@@ -72,7 +75,7 @@ bool Agent::receive_answer(Signal* answer, int original) {
     // Calculate distances and keep track of closest one
     double min = numeric_limits<double>::infinity();
     int closest = 0;
-    for(int i=0; i < this->signals.size(); i++) {
+    for(int i=0; i < signals.size(); i++) {
         double dist = answer->acoustic_distance_to(signals[i]);
         if(dist < min) {
             min = dist;
@@ -81,7 +84,7 @@ bool Agent::receive_answer(Signal* answer, int original) {
     }
 
     if(closest == original) {
-        this->signals[original]->success++;
+        signals[original]->success++;
         return true;
     } else {
         return false;
@@ -92,52 +95,52 @@ bool Agent::receive_answer(Signal* answer, int original) {
 void Agent::receive_success(bool success, int original, Signal* message, double noise, mt19937 gen) {
 
     if(success){
-        this->signals[original]->shift(message, gen);
-        this->signals[original]->success++;
+        signals[original]->shift(message, gen);
+        signals[original]->success++;
     } else {
-        if(this->signals[original]->used != 0 && (this->signals[original]->success / this->signals[original]->used) > 0.5) {
+        if(signals[original]->used != 0 && (signals[original]->success / signals[original]->used) > 0.5) {
 
             // If threshold is achieved, move away from the signal
-            this->signals[original]->shift(message, gen, true);
+            signals[original]->shift(message, gen, true);
 
             // And create a new signal that looks like the perceived one 
             Signal* new_signal = new Signal(message, gen);
-            this->signals.push_back(new_signal);
+            signals.push_back(new_signal);
 
         } else {
 
             // Otherwise just shift closer
-            this->signals[original]->shift(message, gen);
+            signals[original]->shift(message, gen);
         }
     }
 }
 
 // Remove bad signals
 void Agent::remove_bad_vowels() {
-    for(int i=0; i < this->signals.size(); i++) {
-        if(this->signals[i]->used > 5.0 && (this->signals[i]->success / this->signals[i]->used) < 0.7) {
-            this->delete_signal(i);
+    for(int i=0; i < signals.size(); i++) {
+        if(signals[i]->used > 5.0 && (signals[i]->success / signals[i]->used) < 0.7) {
+            delete_signal(i);
         }
     }
 }
 
 // Merge signals
 bool Agent::merge_signals(double noise) {
-    for(int i=0; i < this->signals.size(); i++) {
-        for(int j=0; j < this->signals.size(); j++) {
+    for(int i=0; i < signals.size(); i++) {
+        for(int j=0; j < signals.size(); j++) {
             if(i != j) {
-                if(this->signals[i]->acoustic_distance_to(this->signals[j]) < (log(1+noise)/0.1719-log(1-noise)/0.1719) 
-                   || this->signals[i]->articulatory_distance_to(this->signals[j]) < 0.17) {
+                if(signals[i]->acoustic_distance_to(signals[j]) < (log(1+noise)/0.1719-log(1-noise)/0.1719) 
+                   || signals[i]->articulatory_distance_to(signals[j]) < 0.17) {
                      // 0.17 is the minimum distance achievable by shifting phonemes
 	                 // RelBark(1+AmbNoise)-RelBark(1-AmbNoise) is the maximum distance a phoneme can be shifted by ambient noise
-                    if((this->signals[i]->used == 0) || (this->signals[j]->used != 0 && this->signals[i]->success / this->signals[i]->used < this->signals[j]->success < this->signals[j]->used)) {
-                        this->signals[j]->success += this->signals[i]->success;
-                        this->signals[j]->used += this->signals[i]->used;
-                        this->delete_signal(i);
+                    if((signals[i]->used == 0) || (signals[j]->used != 0 && signals[i]->success / signals[i]->used < signals[j]->success < signals[j]->used)) {
+                        signals[j]->success += signals[i]->success;
+                        signals[j]->used += signals[i]->used;
+                        delete_signal(i);
                     } else {
-                        this->signals[i]->success += this->signals[j]->success;
-                        this->signals[i]->used += this->signals[j]->used;
-                        this->delete_signal(j);
+                        signals[i]->success += signals[j]->success;
+                        signals[i]->used += signals[j]->used;
+                        delete_signal(j);
                     }
                     return true;
                 }
@@ -147,22 +150,39 @@ bool Agent::merge_signals(double noise) {
     return false;
 }
 
-// Delete signal
-void Agent::delete_signal(int i) {
-    delete(this->signals[i]);
-    this->signals.erase(this->signals.begin() + i);
+// Calculate repertoire energy
+double Agent::repertoire_energy() {
+    double energy = 0;
+    for(int s1 = 0; s1 < signals.size()-1; s1++) {
+        for(int s2 = s1+1; s2 < signals.size(); s2++) {
+            energy += 1 / pow(signals[s1]->acoustic_distance_to(signals[s2]),2);
+        }
+    }
+    return energy;
 }
 
-// Delete all signals
-void Agent::delete_signals() {
-    for(int i = 0; i < this->signals.size(); i++) {
-        this->delete_signal(i);
-    }
+// Reset repertoire
+void Agent::reset_repertoire() {
+    free();
+    signals.clear();
+}
+
+// Delete signal
+void Agent::delete_signal(int i) {
+    delete(signals[i]);
+    signals.erase(signals.begin() + i);
+}
+
+// Free allocated memory 
+void Agent::free() {
+
+    // Free all signals
+    for(int i = 0; i < signals.size(); i++) delete(signals[i]);
 }
 
 // Printing method
 void Agent::write(ostream& outs, int iteration, int agent) {
-    for(int s = 0; s < this->signals.size(); s++) {
-        this->signals[s]->write(outs, iteration, agent, this->signals.size(), s);
+    for(int s = 0; s < signals.size(); s++) {
+        signals[s]->write(outs, iteration, agent, signals.size(), s);
     }
 }

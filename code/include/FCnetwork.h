@@ -9,15 +9,12 @@ using namespace std;
 
 // FULLY CONNECTED NETWORK CLASS
 class FCnetwork : public Network {
+public: 
 
-    public: 
+    // Initialisor
+    // -----------------------------------------------
 
-    // Set the variables
-    void initialise(int N, mt19937 rand_gen);
-
-    // Generate the network
-    void generate();
-
+    FCnetwork(int population_size, mt19937 rand_gen, string filename);
 };
 
 #endif

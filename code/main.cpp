@@ -12,33 +12,30 @@
 int main(int argc, char* argv[]) {
 
     // Parameters
-    int N = 20;
-    int I = 10000;
+    int average_over = 100;
+    int population_size = 20;
+    int games = 5000;
     double noise = 0.1;
     double new_signal_prob = 0.01;
     double clean_prob = 0.1;
+    vector<int> write_iterations{20, 500, 2000, 5000, 10000};
 
     // Randomness
     unsigned int seed = static_cast<unsigned int>( time(NULL) ); 
     mt19937 rand_gen(seed);
 
-    // Network
-    FCnetwork network;
     try {
 
-        network.initialise(N, rand_gen);
+        // Network
+        FCnetwork network(population_size, rand_gen, "network.txt");
+        // FCnetwork network(population_size, rand_gen, "network.txt");  // --> select for fully-connected network
+        // Network network("network.txt");                                 // --> select to read from network file
 
-        // Generate the scale-free network
-        network.generate();
-        
-        // Print the network to a .txt file
-        network.print_network("network.txt");
-
-        // Run the imitation game simulation and print the results to a .txt file
-        network.simulation("results.txt", I, noise, new_signal_prob, clean_prob);
+        // Run the simulation and save the results
+        network.simulation(average_over, games, noise, new_signal_prob, clean_prob, write_iterations, "results.txt");
 
         // Clean up
-        network.free_memory();
+        network.free();
 
         // Print seed
         cout << "Used seed: " << seed << "\n";
