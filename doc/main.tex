@@ -183,33 +183,32 @@ conversions.
 
 Figure~\ref{fig:model} gives a graphical representation of the steps that are executed during a simulation. Each
 iteration starts by selecting a random agent $A$ from the complete population. Agent $A$ is the \textit{sender} of the
-iteration. With probability $\frac{1}{100}$, agent $A$ is allowed to add a new distributed vowel to their repertoire.
+iteration. With a certain probability, agent $A$ is allowed to add a new distributed vowel to their repertoire.
 The distribution of vowels is implemented just as it was by~\shortciteA{deboerSelforganizationVowelSystems2000}: by
-maximising the distance to all other vowels. Subsequently, every agent merges vowels that are too alike until no merges
-are possible. The merging threshold is $0.17$ in articulatory space and $\frac{log(1+noise)}{0.1719} -
-    \frac{log(1-noise}{0.1719}$, defined by~\shortciteA{deboerSelforganizationVowelSystems2000} to be the maximum
-distance
+maximising the distance to all other vowels. Subsequently, agent $A$ merges its vowels that are too alike until no merges
+are possible. The merging threshold is $0.17$ in articulatory space and $\frac{log(1+noise)}{0.1719} - \frac{log(1-noise}{0.1719}$,
+defined by~\shortciteA{deboerSelforganizationVowelSystems2000} to be the maximum distance
 a vowel can be shifted by ambient noise, in acoustic space.
 After merging, a random neighbour $B$ of agent $A$ is chosen to be the receiver of the iteration.
 Originally,~\shortciteA{deboerSelforganizationVowelSystems2000} chose the receiver agent as a random agent from the
 complete population, thereby modelling a fully connected network. Once a sender and a receiver have been chosen, an
 imitation game is played. Agent $A$ chooses a random vowel $v_A$ from their repertoire, synthesises it, and sends it to
-agent $B$ as an utterance $v'_A$, thereby adding a $10\%$ noise shift. If agent $A$'s repertoire was empty, it is
+agent $B$ as an utterance $v'_A$, thereby adding a noise shift. If agent $A$'s repertoire was empty, it is
 initialised with a completely random vowel. Agent $B$ hears the synthesised vowel $v'_A$ and finds the most resembling
 vowel $v_B$ in their repertoire, synthesises it, and sends it to agent $A$ as an utterance $v'_B$, once more, adding a
-$10\%$ noise shift. Agent $A$ hears agent $B$'s response and finds the most resembling vowel in their repertoire. If
+noise shift. Agent $A$ hears agent $B$'s response and finds the most resembling vowel in their repertoire. If
 this vowel is the original $v_A$ then the imitation game was successful and agent $A$ sends \textit{True} to agent $B$,
 otherwise the imitation game failed and agent $A$ sends \textit{False} to agent $B$. Lastly, agent $B$ receives the
 success boolean and does the following. If it is \textit{True}, agent $B$ moves $v_B$ closer to $v_A$, since by
-uttering $v_B$ agent $A$ was able to understand agent $B$. If it is \textit{False} and the success rate of $v_B$ is $>
-    0.5$ then agent $B$ moves $v_B$ away from $v_A$ and adds a new vowel as close as possible to $v_A$. The reasoning
-behind this is that $v_B$ is not a bad vowel because it is successful half of the times it is used. It is rather that
+uttering $v_B$ agent $A$ was able to understand agent $B$. If it is \textit{False} and the success rate of $v_B$ is $>\beta_S$ (soft success threshold)
+then agent $B$ moves $v_B$ away from $v_A$ and adds a new vowel as close as possible to $v_A$. The reasoning
+behind this is that $v_B$ is not a bad vowel because it is successful to some degree. It is rather that
 agent $A$ probably has another vowel that is closer to $v_B$ than $v_A$ is. Therefore, agent $B$ should learn this
-vowel. If the received boolean is \textit{False} and the success rate of $v_B$ is $\leq 0.5$, then agent $B$ still
+vowel. If the received boolean is \textit{False} and the success rate of $v_B$ is $\leq \beta_S$, then agent $B$ still
 moves $v_B$ closer to $v_A$, however, this does not add to the success rate of $v_B$. Finally, after the imitation game
-and with a probability of $\frac{1}{10}$, every agent is allowed to remove the bad vowels from their repertoires.
-Vowels that have been used at least 5 times and have a success rate $< 70\%$ are removed. As mentioned, the network
-that decides an agent's neighbours is generated using Algorithm~\ref{alg:PA}. Synthesising, shifting vowels and
+and with probability $\alpha$, every agent is allowed to remove the bad vowels from their repertoires.
+Vowels that have been used at least 5 times and have a success rate $< \beta_H$ (hard success threshold) are removed. As mentioned, the network
+that determines an agent's neighbours is generated using Algorithm~\ref{alg:PA}. Synthesising, shifting vowels and
 distance measures are all implemented as they were by~\shortciteA{deboerSelforganizationVowelSystems2000}.
 
 The bark-to-hertz and hertz-to-bark conversions that were implemented
@@ -239,36 +238,113 @@ While different conversions will most likely not change much in the results, for
 standardized implementation.
 
 \section{Experiments\label{sec:exp}}
-Two types of experiments are established. Firstly, the experiment and evaluation from Section 4.1
-from~\shortcite{deboerSelforganizationVowelSystems2000} is reproduced. This serves to demonstrate that the
-reimplementation of the model is correct. Both are also done for an instance of the model that runs its simulations in
-a scale-free network. By comparing the results of the two, insights can be gained regarding the research question that
-is addressed here. Additionally, for both models, a second experiment is conducted to investigate the influence of the
-population size on the results. Due to the difference in network structure of the two models it is reasonable to expect
-different results for this experiment.
+Three experiments are conducted. Firstly, the experiment from Section 4.1
+from~\shortcite{deboerSelforganizationVowelSystems2000} is reproduced for the fully connected model. This serves to demonstrate that the
+reimplementation of the model is correct. Secondly, said experiment is also conducted for an instance of the model that runs its
+simulations in a scale-free network. By comparing the results of the two, insights can be gained regarding the research question that
+is addressed here. Lastly, one of the experiments from Section 4.2 from~\shortcite{deboerSelforganizationVowelSystems2000} is reproduced for
+the scale-free model. Namely, the experiment that investigates the influence of the population size on the emergence.
+Due to the difference in network structure it is reasonable to expect different results for this experiment.
 
-The first experiment consists of investigating the emergence of a vowel system in a population of 20 agents under 10\%
-acoustic noise.
-\shortciteA{deboerSelforganizationVowelSystems2000} analyses the combined acoustic repertoires of all agents after 20,
-500, 2000, and 10000 imitation games. The robustness of the emerged results is evaluated by repeating the simulations
-1000 times for 5000 imitation games and plotting the success, size, and energy distributions. Both of these evaluations
-are repeated here. While the remaining other experiments from \shortcite{deboerSelforganizationVowelSystems2000} could
-also be repeated, since the model here is a reimplementation, the mentioned experiments should be enough to show that
-the reimplementation was done correctly. Running the other experiments for an instance of the model that runs its
-simulations in a scale-free network could also be interesting but it is not done in this article.
+An adaptation to the simulations of~\shortciteA{deboerSelforganizationVowelSystems2000} that is
+implemented here is that the number of played imitation games is always kept per agent and never globally.
+While~\shortciteA{deboerSelforganizationVowelSystems2000} only implemented this to allow for correct comparisons
+between the results of simulations with different population sizes, here it is implemented for all the experiments, solely for practicality.
+In addition, to allow for correct comparisons when population sizes are varied, the probability of adding new distributed vowels must be made dependent on the
+number of imitation games played per agent instead of on the global number of played imitation games. Therefore,~\shortciteA{deboerSelforganizationVowelSystems2000}
+sets the probability of adding new distributed vowels to $\frac{\gamma}{N}$, with $N$ the population size and $\gamma$ a parameter.
+\shortciteA{deboerSelforganizationVowelSystems2000} chose $\gamma=0.2$ such that for a population of 20 agents the insertion probability is $1\%$.
+In all simulations that are presented here, the same formula and $\gamma$ are used.
 
-To allow for correct comparisons in the experiments where population sizes are varied,
-~\shortciteA{deboerSelforganizationVowelSystems2000} implements two changes in the model. Firstly, the number of games
-is kept per agent and not globally, hence, smaller populations play a smaller number of imitation games. Secondly, the
-probability of adding new distributed vowels must be made dependent on the number of games per agent instead of on the
-global number of played games. Therefore, the probability of adding new distributed vowels is set to $\frac{0.2}{N}$,
-with $N$ the number of agents in the population. \shortciteA{deboerSelforganizationVowelSystems2000} chose 0.2 as
-denominator such that for a population of 20 agents the insertion probability is $1\%$. Both of these changes are
-implemented here as well.
+Aside from the population size and $\gamma$, the model has a variety of other parameters (values taken from \shortcite{deboerSelforganizationVowelSystems2000}): the probability of letting agents
+remove bad vowels $\alpha=0.1$, the relative weight of the effective second formant with respect to the first formant $\lambda=0.3$, the acoustic noise $\sigma=0.1$, the soft vowel success
+threshold $\beta_S=0.5$, and the hard vowel success threshold $\beta_H=0.7$.
+Aside from the population size in the third experiment, all of these remain constant in all experiments.
+
+\shortciteA{deboerSelforganizationVowelSystems2000} evaluates the robustness of
+the results by repeating the simulations 1000 times and plotting the success, size, and energy distributions.
+The energy of an agent's repertoire is calculated using the energy measure defined by~\shortciteA{liljencrantsNumericalSimulationVowel1972}:
+\begin{align}
+    E = \sum^{N-1}_{i=1}\sum^{i-1}_{j=0} \frac{1}{r_{ij}^2}
+\end{align}
+with $r_{ij}$ the distance between vowels $i$ and $j$.
+This is all repeated here as well.
 
 \section{Discussion\label{sec:discus}}
 
 \section{Conclusions\label{sec:conclusion}}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/20.pdf}
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/100.pdf}
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/250.pdf}
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/500.pdf}
+    \caption{Combined vowel repertoires of a fully connected population of 100 agents after 20, 100, 250, and 500
+        imitation games per agent.}
+    \label{fig:FC_res}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/20.pdf}
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/100.pdf}
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/250.pdf}
+    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/500.pdf}
+    \caption{Combined vowel repertoires of a scale-free population of 100 agents after 20, 100, 250, and 500
+        imitation games per agent.}
+    \label{fig:BA_res}
+\end{figure}
+
+\begin{figure}[b]
+    \centering
+    \begin{subfigure}{.33\textwidth}
+        \centering
+        \includegraphics[width=.8\linewidth]{figures/plots/exp1_FC/success_distribution.pdf}
+        \caption{Success}
+        \label{fig:FC_stats_success}
+    \end{subfigure}%
+    \begin{subfigure}{.33\textwidth}
+        \centering
+        \includegraphics[width=.8\linewidth]{figures/plots/exp1_FC/size_distribution.pdf}
+        \caption{Size}
+        \label{fig:FC_stats_size}
+    \end{subfigure}%
+    \begin{subfigure}{.33\textwidth}
+        \centering
+        \includegraphics[width=.8\linewidth]{figures/plots/exp1_FC/energy_distribution.pdf}
+        \caption{Energy}
+        \label{fig:FC_stats_energy}
+    \end{subfigure}%
+    \caption{Distribution of statistics for 1000 simulations in a fully connected population after 400 imitation games
+        per agent.}
+    \label{fig:FC_stats}
+\end{figure}
+
+\begin{figure}[b]
+    \centering
+    \begin{subfigure}{.33\textwidth}
+        \centering
+        \includegraphics[width=.8\linewidth]{figures/plots/exp1_BA/success_distribution.pdf}
+        \caption{Success}
+        \label{fig:BA_stats_success}
+    \end{subfigure}%
+    \begin{subfigure}{.33\textwidth}
+        \centering
+        \includegraphics[width=.8\linewidth]{figures/plots/exp1_BA/size_distribution.pdf}
+        \caption{Size}
+        \label{fig:BA_stats_size}
+    \end{subfigure}%
+    \begin{subfigure}{.33\textwidth}
+        \centering
+        \includegraphics[width=.8\linewidth]{figures/plots/exp1_BA/energy_distribution.pdf}
+        \caption{Energy}
+        \label{fig:BA_stats_energy}
+    \end{subfigure}%
+    \caption{Distribution of statistics for 1000 simulations in a scale-free population after 400 imitation games
+        per agent.}
+    \label{fig:BA_stats}
+\end{figure}
 
 \bibliography{refs}
 \end{document}

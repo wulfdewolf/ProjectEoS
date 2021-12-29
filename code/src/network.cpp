@@ -99,8 +99,8 @@ void Network::simulation(int average_over, int iterations, double noise, double 
     auto start = high_resolution_clock::now(); 
 
     // Files to write results to
-    ofstream repertoire_file("repertoires_" + filename);
-    ofstream statistics_file("statistics_" + filename);
+    ofstream repertoire_file("../results/repertoires_" + filename);
+    ofstream statistics_file("../results/statistics_" + filename);
 
     // Loop over average_over
     for(int a = 0; a < average_over; a++) {
@@ -109,58 +109,62 @@ void Network::simulation(int average_over, int iterations, double noise, double 
         // Loop over iterations 
         for(int i = 1; i < iterations + 1; i++) {
 
-            // Select sender
-            Agent* sender = network[agent_dis(rand_gen)];
+            // Loop over agents
+            for(int j = 0; j < population_size; j++) {
 
-            // Select receiver
-            uniform_int_distribution<> receiver_dis(0, (sender->edges.size())-1); 
-            Agent* receiver = network[sender->edges[receiver_dis(rand_gen)]];
+                // Select sender
+                Agent* sender = network[j];
 
-            /*
-                Play the imitation game
-            */
+                // Select receiver
+                uniform_int_distribution<> receiver_dis(0, (sender->edges.size())-1); 
+                Agent* receiver = network[sender->edges[receiver_dis(rand_gen)]];
 
-            // Sometimes add a distributed new signal 
-            if(prob_dis(rand_gen) <= new_signal_prob) {
-                sender->signals.push_back(new Signal(rand_gen, sender->signals));
-            }
+                /*
+                    Play the imitation game
+                */
 
-            // Merge signals until nothing is mergeable
-            bool merged = true;
-            while(merged) {
-                merged = sender->merge_signals(noise);
-            }
-
-            // Create message from prototype
-            int message_prototype = sender->random_message(rand_gen);
-            Signal* message = new Signal(sender->signals[message_prototype], rand_gen, noise);
-
-            // Send to receiver and create answer from prototype
-            int answer_prototype = receiver->receive_message(message, rand_gen);
-            Signal* answer = new Signal(receiver->signals[answer_prototype], rand_gen, noise);
-
-            // Receive replication
-            bool success = sender->receive_answer(answer, message_prototype);
-            if(success) success_counter++;
-
-            // Receive success
-            receiver->receive_success(success, answer_prototype, message, noise, rand_gen);
-
-            // Clean up
-            delete(message);
-            delete(answer);
-
-            // Allow agents to remove their signals
-            if(prob_dis(rand_gen) <= clean_prob) {
-                for(int agent = 0; agent < population_size; agent++) {
-                    network[agent]->remove_bad_vowels();
+                // Sometimes add a distributed new signal 
+                if(prob_dis(rand_gen) <= new_signal_prob) {
+                    sender->signals.push_back(new Signal(rand_gen, sender->signals));
                 }
-            }
 
-            // Write agent signals (only for last average run and per given timestep)
-            if(a == average_over-1 && find(write_iterations.begin(), write_iterations.end(), i) != write_iterations.end()) {
-                for(int agent = 0; agent < population_size; agent++) {
-                    network[agent]->write(repertoire_file, i, agent);
+                // Merge signals until nothing is mergeable
+                bool merged = true;
+                while(merged) {
+                    merged = sender->merge_signals(noise);
+                }
+
+                // Create message from prototype
+                int message_prototype = sender->random_message(rand_gen);
+                Signal* message = new Signal(sender->signals[message_prototype], rand_gen, noise);
+
+                // Send to receiver and create answer from prototype
+                int answer_prototype = receiver->receive_message(message, rand_gen);
+                Signal* answer = new Signal(receiver->signals[answer_prototype], rand_gen, noise);
+
+                // Receive replication
+                bool success = sender->receive_answer(answer, message_prototype);
+                if(success) success_counter++;
+
+                // Receive success
+                receiver->receive_success(success, answer_prototype, message, noise, rand_gen);
+
+                // Clean up
+                delete(message);
+                delete(answer);
+
+                // Allow agents to remove their signals
+                if(prob_dis(rand_gen) <= clean_prob) {
+                    for(int agent = 0; agent < population_size; agent++) {
+                        network[agent]->remove_bad_vowels();
+                    }
+                }
+
+                // Write agent signals (only for last average run and per given timestep)
+                if(a == average_over-1 && find(write_iterations.begin(), write_iterations.end(), i) != write_iterations.end()) {
+                    for(int agent = 0; agent < population_size; agent++) {
+                        network[agent]->write(repertoire_file, i, agent);
+                    }
                 }
             }
         }
@@ -183,9 +187,9 @@ void Network::simulation(int average_over, int iterations, double noise, double 
         }
 
         // Write average entry
-        statistics_file << success_counter              / iterations        << " ";
-        statistics_file << average_repertoire_size      / population_size   << " ";
-        statistics_file << average_repertoire_energy    / population_size   << endl;
+        statistics_file << success_counter              / (iterations*population_size)  << " ";
+        statistics_file << average_repertoire_size      / population_size               << " ";
+        statistics_file << average_repertoire_energy    / population_size               << endl;
 
     }
 

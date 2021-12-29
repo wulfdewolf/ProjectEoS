@@ -60,5 +60,5 @@ BAnetwork::BAnetwork(int population_size, mt19937 rand_gen, string filename) : N
     }
 
     // Write to file
-    write_network(filename);
+    write_network("../results/" + filename);
 }

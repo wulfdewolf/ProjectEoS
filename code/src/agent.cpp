@@ -152,10 +152,11 @@ bool Agent::merge_signals(double noise) {
 
 // Calculate repertoire energy
 double Agent::repertoire_energy() {
-    double energy = 0;
+    double energy = 0.0;
     for(int s1 = 0; s1 < signals.size()-1; s1++) {
         for(int s2 = s1+1; s2 < signals.size(); s2++) {
-            energy += 1 / pow(signals[s1]->acoustic_distance_to(signals[s2]),2);
+            double distance_to = signals[s1]->acoustic_distance_to(signals[s2]);
+            if(distance_to != 0) energy += 1 / pow(distance_to,2);
         }
     }
     return energy;
