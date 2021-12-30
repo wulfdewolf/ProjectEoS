@@ -13,12 +13,12 @@ int main(int argc, char* argv[]) {
 
     // Parameters
     int average_over = 1000;
-    int population_size = 100;
+    int population_size = 300;
     int games_per_agent = 500;
     double noise = 0.1;
     double new_signal_prob = 0.2/population_size;
     double clean_prob = 0.1;
-    vector<int> write_iterations{20, 100, 200, 250, 300, 350, 400, 450, 500};
+    vector<int> write_iterations{1, 25, 100, 250, 300, 350, 400, 450, 455, 456, 460, 465, 470, 475, 480, 485, 490, 495, 500};
 
     // Randomness
     unsigned int seed = static_cast<unsigned int>( time(NULL) ); 
@@ -27,12 +27,12 @@ int main(int argc, char* argv[]) {
     try {
 
         // Network
-        BAnetwork network(population_size, rand_gen, "exp2/BAnetwork100.txt");
-        // FCnetwork network(population_size, rand_gen, "network.txt");  // --> select for fully-connected network
-        // Network network("network.txt");                                 // --> select to read from network file
+        FCnetwork network(population_size, rand_gen, "exp2/BAnetwork300.txt");
+        // FCnetwork network(population_size, rand_gen, "network.txt");         // --> select for fully-connected network
+        // Network network("network.txt");                                      // --> select to read from network file
 
         // Run the simulation and save the results
-        network.simulation(average_over, games_per_agent, noise, new_signal_prob, clean_prob, write_iterations, "BAresults100.txt");
+        network.simulation(average_over, games_per_agent, noise, new_signal_prob, clean_prob, write_iterations, "BAresults300.txt");
 
         // Clean up
         network.free();

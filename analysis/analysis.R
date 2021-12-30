@@ -4,16 +4,16 @@ library(ggnet)
 library(network)
 
 # Repertoires
-repertoires <- read.table("~/Documents/study/year2/EOS/ProjectEoS/results/exp2/repertoires_BAresults100.txt", quote = "\"", comment.char = "")
+repertoires <- read.table("~/Documents/study/year2/EOS/ProjectEoS/results/repertoires_FCresults.txt", quote = "\"", comment.char = "")
 colnames(repertoires) <- c("iteration", "agent", "size", "signal", "success", "used", "F1", "F2")
 repertoires$agent <- repertoires$agent + 1
 
 # Network
-edges <- read.table("~/Documents/study/year2/EOS/ProjectEoS/results/FCnetwork.txt", quote = "\"", comment.char = "")
+edges <- read.table("~/Documents/study/year2/EOS/ProjectEoS/results/exp1/FCnetwork.txt", quote = "\"", comment.char = "")
 edges <- edges[-1, ]
 
 # Statistics
-statistics <- read.table("~/Documents/study/year2/EOS/ProjectEoS/results/exp2/statistics_BAresults100.txt", quote = "\"", comment.char = "")
+statistics <- read.table("~/Documents/study/year2/EOS/ProjectEoS/results/statistics_FCresults.txt", quote = "\"", comment.char = "")
 colnames(statistics) <- c("success", "size", "energy")
 
 #----------------------------------------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ for (i in unique(repertoires$iteration)) {
     geom_point() +
     labs(x = expression("F'"[2](Bark)), y = expression("F"[1](Bark)), title = paste(as.character(i), "Games")) +
     theme(text = element_text(size = 20))
-  ggsave(paste("analysis/plots/exp2/100/", as.character(i), ".pdf", sep = ""), device = "pdf")
+  ggsave(paste("analysis/plots/exp1/FC/", as.character(i), ".pdf", sep = ""), width = 7, height = 7, device = "pdf")
 }
 
 
@@ -42,7 +42,7 @@ ggplot(repertoires, aes(x = F2, y = F1)) +
   scale_y_reverse() +
   scale_x_reverse() +
   geom_point() +
-  labs(x = expression("F'"[2](Bark)), y = expression("F"[1](Bark)), title = paste(as.character(max(tot$iteration)), "Games"))
+  labs(x = expression("F'"[2](Bark)), y = expression("F"[1](Bark)), title = paste(as.character(max(repertoires$iteration)), "Games"))
 ggsave("analysis/plots/BA_80000_split.pdf", device = "pdf")
 
 #----------------------------------------------------------------------------------------------------------------------------
@@ -77,26 +77,33 @@ ggsave("analysis/plots/net_degree.pdf", device = "pdf")
 
 ggplot(statistics, aes(x = success)) +
   geom_histogram(binwidth = .005, colour = "black", fill = "white") +
-  labs(x = "", y = "", title = paste(as.character(max(repertoires$iteration)), "Games")) +
+  labs(x = "", y = "", title = paste("Success,", as.character(max(repertoires$iteration)), "Games")) +
   theme(text = element_text(size = 20))
-ggsave("analysis/plots/exp1/BA/success_distribution.pdf", device = "pdf")
+ggsave("analysis/plots/exp1/FC/success_distribution.pdf", width = 7, height = 7, device = "pdf")
 
+mean(statistics$success)
+sd(statistics$success)
 
 #----------------------------------------------------------------------------------------------------------------------------
 # Size distribution
 
 ggplot(statistics, aes(x = size)) +
   geom_histogram(binwidth = .1, colour = "black", fill = "white") +
-  labs(x = "", y = "", title = paste(as.character(max(repertoires$iteration)), "Games")) +
+  labs(x = "", y = "", title = paste("Size,", as.character(max(repertoires$iteration)), "Games")) +
   theme(text = element_text(size = 20))
-ggsave("analysis/plots/exp1/BA/size_distribution.pdf", device = "pdf")
+ggsave("analysis/plots/exp1/FC/size_distribution.pdf", width = 7, height = 7, device = "pdf")
 
+mean(statistics$size)
+sd(statistics$size)
 
 #----------------------------------------------------------------------------------------------------------------------------
 # Energy distribution
 
 ggplot(statistics, aes(x = as.numeric(energy))) +
   geom_histogram(binwidth = 0.1, colour = "black", fill = "white") +
-  labs(x = "", y = "", title = paste(as.character(max(repertoires$iteration)), "Games")) +
+  labs(x = "", y = "", title = paste("Energy,", as.character(max(repertoires$iteration)), "Games")) +
   theme(text = element_text(size = 20))
-ggsave("analysis/plots/exp1/BA/energy_distribution.pdf", device = "pdf")
+ggsave("analysis/plots/exp1/FC/energy_distribution.pdf", width = 7, height = 7, device = "pdf")
+
+mean(statistics$energy)
+sd(statistics$energy)

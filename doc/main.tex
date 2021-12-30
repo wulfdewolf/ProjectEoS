@@ -4,7 +4,9 @@
 \usepackage{amsmath}
 \usepackage{gfsdidot}
 
-% Graphics
+% Graphic
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{geometry}
@@ -14,8 +16,6 @@
  left=20mm,
  top=20mm,
 }
-\usepackage{caption}
-\usepackage{subcaption}
 
 % Math
 \usepackage{algorithm}
@@ -185,7 +185,7 @@ Figure~\ref{fig:model} gives a graphical representation of the steps that are ex
 iteration starts by selecting a random agent $A$ from the complete population. Agent $A$ is the \textit{sender} of the
 iteration. With a certain probability, agent $A$ is allowed to add a new distributed vowel to their repertoire.
 The distribution of vowels is implemented just as it was by~\shortciteA{deboerSelforganizationVowelSystems2000}: by
-maximising the distance to all other vowels. Subsequently, agent $A$ merges its vowels that are too alike until no merges
+maximising the distance to all other vowels. Subsequently, every agent merges its vowels that are too alike until no merges
 are possible. The merging threshold is $0.17$ in articulatory space and $\frac{log(1+noise)}{0.1719} - \frac{log(1-noise}{0.1719}$,
 defined by~\shortciteA{deboerSelforganizationVowelSystems2000} to be the maximum distance
 a vowel can be shifted by ambient noise, in acoustic space.
@@ -265,6 +265,7 @@ Aside from the population size in the third experiment, all of these remain cons
 the results by repeating the simulations 1000 times and plotting the success, size, and energy distributions.
 The energy of an agent's repertoire is calculated using the energy measure defined by~\shortciteA{liljencrantsNumericalSimulationVowel1972}:
 \begin{align}
+    \label{form:energy}
     E = \sum^{N-1}_{i=1}\sum^{i-1}_{j=0} \frac{1}{r_{ij}^2}
 \end{align}
 with $r_{ij}$ the distance between vowels $i$ and $j$.
@@ -272,79 +273,189 @@ This is all repeated here as well.
 
 \section{Discussion\label{sec:discus}}
 
+\begin{figure}[t]
+    \centering
+    \subcaptionbox[Short Subcaption]{%
+        Fully connected%
+        \label{subfig:FC_res}%
+    }
+    [%
+        \textwidth % width of caption
+    ]%
+    {%
+        \includegraphics[scale=0.23]{figures/plots/exp1/FC/1.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/FC/25.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/FC/100.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/FC/500.pdf}
+    }%
+    \\\bigskip
+    \subcaptionbox[Short Subcaption]{%
+        Scale-free%
+        \label{subfig:BA_res}%
+    }
+    [%
+        \textwidth % width of caption
+    ]%
+    {%
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/1.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/25.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/100.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/500.pdf}
+    }%
+    \caption{Combined vowel repertoires of a population of 20 agents after 1, 25, 100, and 500
+        imitation games per agent.}
+    \label{fig:res}
+\end{figure}
+
+\subsection{Emergence of a vowel system}
+Figure~\ref{subfig:FC_res} gives the emergence of a vowel system in a fully connected population of 20 agents under $10\%$ acoustic noise.
+The prototypes of the agents' vowels are combined and plotted in the $F_1-F'_2$ space. The combined repertoires are shown after 1, 25, 100 and 500 games per agent.
+After 1 imitation game per agent it can be seen that the vowels are more or less evenly distributed across the vowel space. There is already some tendency to cluster.
+This corresponds to the results in~\shortcite{deboerSelforganizationVowelSystems2000} and is due to the fact that agents start out with an empty repertoire and
+random vowels are inserted to get the imitation games started. The receiver agents try to imitate utterances as good as possible and this causes the early clusters.
+After 25 imitation games per agent, the clustering has become more promounced, three to four clusters seem to form. At this point clusters will start compacting.
+However, there still seem to be only 3 to 4 clusters and the vowel space has space for extra vowels.
+After 100 imitation games per agent, the clusters start to become compact and the vowel space has become more filled.
+Lastly, after 500 games per agent, the clusters are all tightly packed and some additional clusters have been established.
+At this point, the vowel system is stable to some degree. New clusters can still be formed and the existing clusters move around but generally the vowel system remains the same.
+These results correspond to those of~\shortciteA{deboerSelforganizationVowelSystems2000}.
+
+Figure~\ref{subfig:BA_res} depicts the same results but for the scale-free model.
+While the situations after 1 and 25 imitation games seem to roughly correspond to those of the fully connected model, after 100 imitation games, the clusters still seem
+to struggle to become compact. Even after 500 imitation games per agent some of the clusters still consist of subclusters.
+This can surely be a result of the scale-free architecture of the population.
+The hubs that a scale-free network contains make compacting the clusters more difficult.
+A hypothesis for the cause of this is that inter-hub communication can keep a hub-specific variant of a vowel in tact in such a way that inter-hub
+communication using this vowel is still succesful. Such a phenomenon would model the existence of dialects in the real world.
+However, more experiments need to be conducted to verify such an hypothesis.
+Aside from the non-perfectly compacted clusters, the results for a scale-free population seem to correspond to the results for a fully population.
+
+\begin{figure}[t]
+    \centering
+    \subcaptionbox[Short Subcaption]{%
+        Fully connected%
+        \label{subfig:FC_stats}%
+    }
+    [%
+        \textwidth % width of caption
+    ]%
+    {%
+        \includegraphics[scale=0.3]{figures/plots/exp1/FC/success_distribution.pdf}
+        \hfill
+        \includegraphics[scale=0.3]{figures/plots/exp1/FC/size_distribution.pdf}
+        \hfill
+        \includegraphics[scale=0.3]{figures/plots/exp1/FC/energy_distribution.pdf}
+    }%
+    \\\bigskip
+    \subcaptionbox[Short Subcaption]{%
+        Scale-free%
+        \label{subfig:BA_stats}%
+    }
+    [%
+        \textwidth % width of caption
+    ]%
+    {%
+        \includegraphics[scale=0.3]{figures/plots/exp1/BA/success_distribution.pdf}
+        \hfill
+        \includegraphics[scale=0.3]{figures/plots/exp1/BA/size_distribution.pdf}
+        \hfill
+        \includegraphics[scale=0.3]{figures/plots/exp1/BA/energy_distribution.pdf}
+    }
+    \caption{Distribution of statistics for 1000 simulations in a population of 20 agents after 500 imitation games
+        per agent.}
+    \label{fig:stats}
+\end{figure}
+
+\subsection{Evaluation of the emerged vowel systems}
+To verify if the vowel systems that emerge are realistic,~\shortciteA{deboerSelforganizationVowelSystems2000} analyses three properties: the average size of the agents'
+vowel systems, the average number of succesful imitation games, and the energy as defined by~\shortciteA{liljencrantsNumericalSimulationVowel1972} and given by~(\ref{form:energy}).
+\shortciteA{liljencrantsNumericalSimulationVowel1972} showed that minimising their energy function results in realistic vowel systems.~\shortciteA{deboerSelforganizationVowelSystems2000}
+therefore choses to consider vowel systems with near-minimal energy to be realistic, this is done here as well.
+In a second verification,~\shortciteA{deboerSelforganizationVowelSystems2000} compares the emerged vowel systems to real life vowel systems, this is not repeated here.
+
+Figure~\ref{subfig:FC_stats} shows the distributions of the three measures for a fully connected population, these results were obtained by averaging of 1000 simulations of 500 imitation games per
+agent each. The average success is always very high, it ranges between 0.90 and 1.00 and the distribution is skewed to the left. The size distribution shows various average repertoire sizes and clear
+peaks at integer values of the sizes 5 to 9. This is because the population's agents tend to have the same number of vowels in their repertoires. Therefore, the vowel systems that emerged can be
+assumed to be uniform among all agents. However, the simulations did not always end with the a uniform vowel system of the same size. In addition, there is an obvious peak for vowel systems that
+contain 7 vowels. Just as in~\shortcite{deboerSelforganizationVowelSystems2000}, this can be changed by increasing or decreasing the noise.
+Lastly, the energy distribution shows peaks as well. These correspond to the different sizes of vowel systems and to their different configurations. The distribution is very similar to that of
+\shortciteA{deboerSelforganizationVowelSystems2000} and thus the emerged vowel systems can be asumed to be optimal and, in some way, realistic.
+In general, the results correspond to those of~\shortciteA{deboerSelforganizationVowelSystems2000}.
+
+Figure~\ref{subfig:BA_stats} shows the distributions of the three measures for a scale-free population.
+The same observations can be made. This matches the emerged results.
+
+\begin{figure}[t]
+    \centering
+    \subcaptionbox[Short Subcaption]{%
+        20 agents%
+        \label{subfig:BA_res20}%
+    }
+    [%
+        \textwidth % width of caption
+    ]%
+    {%
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/1.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/25.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/100.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp1/BA/500.pdf}
+    }%
+    \\\bigskip
+    \subcaptionbox[Short Subcaption]{%
+        100 agents%
+        \label{subfig:BA_res100}%
+    }
+    [%
+        \textwidth % width of caption
+    ]%
+    {%
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/1.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/25.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/100.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/500.pdf}
+    }%
+    \\\bigskip
+    \subcaptionbox[Short Subcaption]{%
+        300 agents%
+        \label{subfig:BA_res300}%
+    }
+    [%
+        \textwidth % width of caption
+    ]%
+    {%
+        \includegraphics[scale=0.23]{figures/plots/exp2/300/1.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/300/25.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/300/100.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/300/500.pdf}
+    }%
+    \caption{Combined vowel repertoires of a scale-free population of various sizes after 1, 25, 100, and 500
+        imitation games per agent.}
+    \label{fig:res_2}
+\end{figure}
+
+\begin{table}[b]
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            \textbf{Population size} & \textbf{Success distribution} & \textbf{Size distribution} & \textbf{Energy distribution} \\ \hline
+            20                       & 0.9643 $\pm$ 0.01298          & 7.2685 $\pm$ 0.7670        & 4.4003 $\pm$ 1.0709          \\ \hline
+            100                      & 0.9437 $\pm$ 0.01501          & 7.3340 $\pm$ 0.5989        & 4.3176 $\pm$ 0.7761          \\ \hline
+            300                      & 0.9346 $\pm$ 0.01273          & 7.6594 $\pm$ 0.4462        & 4.6592 $\pm$ 0.6068          \\ \hline
+        \end{tabular}%
+    }
+    \caption{Distribution of statistics for 1000 simulations in a scale-free population of various sizes after 500 imitation games
+        per agent.}
+    \label{tab:stats_2}
+\end{table}
+
+\subsection{Sensitivity to population size}
+Figure~\ref{fig:res_2} gives the emergence of vowel systems in a scale-free population of 20, 100, and 300 agents under $10\%$ acoustic noise.
+Accompanying it is Table~\ref{tab:stats_2}, which gives the parameters of the distributions of the three measures averaged over 1000 simulations, 500 imitation
+games per agent each. Two observations can be made here. Firstly, the random dispersion of the vowels after 1 imitation game per agent in the population of 300
+agents gives a good sketch of the form of the vowel space. Secondly, in the plots for the larger populations, an almost line-like pattern shows.
+In the right-most plot for the population of 300 agents this gives the impression that the vowel systems have not stabilised yet. However,
+
 \section{Conclusions\label{sec:conclusion}}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/20.pdf}
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/100.pdf}
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/250.pdf}
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_FC/500.pdf}
-    \caption{Combined vowel repertoires of a fully connected population of 100 agents after 20, 100, 250, and 500
-        imitation games per agent.}
-    \label{fig:FC_res}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/20.pdf}
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/100.pdf}
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/250.pdf}
-    \includegraphics[width=.24\linewidth]{figures/plots/exp1_BA/500.pdf}
-    \caption{Combined vowel repertoires of a scale-free population of 100 agents after 20, 100, 250, and 500
-        imitation games per agent.}
-    \label{fig:BA_res}
-\end{figure}
-
-\begin{figure}[b]
-    \centering
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/plots/exp1_FC/success_distribution.pdf}
-        \caption{Success}
-        \label{fig:FC_stats_success}
-    \end{subfigure}%
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/plots/exp1_FC/size_distribution.pdf}
-        \caption{Size}
-        \label{fig:FC_stats_size}
-    \end{subfigure}%
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/plots/exp1_FC/energy_distribution.pdf}
-        \caption{Energy}
-        \label{fig:FC_stats_energy}
-    \end{subfigure}%
-    \caption{Distribution of statistics for 1000 simulations in a fully connected population after 400 imitation games
-        per agent.}
-    \label{fig:FC_stats}
-\end{figure}
-
-\begin{figure}[b]
-    \centering
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/plots/exp1_BA/success_distribution.pdf}
-        \caption{Success}
-        \label{fig:BA_stats_success}
-    \end{subfigure}%
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/plots/exp1_BA/size_distribution.pdf}
-        \caption{Size}
-        \label{fig:BA_stats_size}
-    \end{subfigure}%
-    \begin{subfigure}{.33\textwidth}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/plots/exp1_BA/energy_distribution.pdf}
-        \caption{Energy}
-        \label{fig:BA_stats_energy}
-    \end{subfigure}%
-    \caption{Distribution of statistics for 1000 simulations in a scale-free population after 400 imitation games
-        per agent.}
-    \label{fig:BA_stats}
-\end{figure}
 
 \bibliography{refs}
 \end{document}

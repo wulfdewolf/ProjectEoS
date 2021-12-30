@@ -104,7 +104,7 @@ void Network::simulation(int average_over, int iterations, double noise, double 
 
     // Loop over average_over
     for(int a = 0; a < average_over; a++) {
-        double success_counter = 0;
+        double success_counter = 0.0;
 
         // Loop over iterations 
         for(int i = 1; i < iterations + 1; i++) {
@@ -129,9 +129,11 @@ void Network::simulation(int average_over, int iterations, double noise, double 
                 }
 
                 // Merge signals until nothing is mergeable
-                bool merged = true;
-                while(merged) {
-                    merged = sender->merge_signals(noise);
+                for(int agent = 0; agent < population_size; agent++) {
+                    bool merged = true;
+                    while(merged) {
+                        merged = network[agent]->merge_signals(noise);
+                    }
                 }
 
                 // Create message from prototype
