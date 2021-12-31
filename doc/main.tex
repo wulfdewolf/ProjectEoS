@@ -1,8 +1,7 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage[english]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
-\usepackage{gfsdidot}
 
 % Graphic
 \usepackage{caption}
@@ -53,7 +52,7 @@
     one of the first agent-based models that was created to analyse emergence in vowel systems. The model is extended
     to
     run simulations in scale-free networks. While scale-free networks are known to be rare in real life society, the
-    simulations that were ran have allowed for gaining insights into the biases of the original system and into how it
+    simulations have allowed for gaining insights into the biases of the original system and into how it
     could be made to model society more accurately.
 \end{abstract}
 
@@ -61,7 +60,7 @@
 It has been known for some time now that self-organisation through repeated interactions between people explains more
 about the evolution of the sound systems of humans than innate predispositions do.
 \shortciteA{liljencrantsNumericalSimulationVowel1972} showed that realistic vowel systems emerge when a measure of
-energy, based on thermodynamic statistics, is optimised in an acoustic space of vowels. After
+energy, based on the statistics used by physicists, is optimised in an acoustic space of vowels. After
 that,~\shortciteA{deboerSelforganizationVowelSystems2000} was the first to model a small population of agents that can
 communicate with each other through a number of steps that are together deemed the `imitation game'. The agents
 in~\shortcites{deboerSelforganizationVowelSystems2000} model had no innate predispositions and were still able to
@@ -69,13 +68,15 @@ converge to a global and realistic vowel system. Thereby showing that innate pre
 the evolution of vowel systems. However,~\shortcites{deboerSelforganizationVowelSystems2000} model contained a number
 of ad hoc methods that could have been left out without influencing the results. Successing models such as those
 by~\shortciteA{oudeyerSelfOrganizationSpeechSounds2005} and~\shortciteA{deboerMultiAgentSimulationsEvolution2010} did
-so successfully while also investigating other questions such as whether or not agents should explicitly be able to
-communicate or not and whether combinatorial structure emerges when instead of single vowels, sequences of vowels are
+so successfully while also investigating other questions such as whether or not agents should already possess the ability to imitate
+and whether combinatorial structure emerges when instead of single vowels, sequences of vowels are
 modelled. A common factor in the older models and even in most of the newer models is the assumption that every agent
 regularly communicates with every other agent. In reality such fully connected networks are only found in very small
 communities or in families. Therefore, these models might not capture dynamics that are present in large real life
 populations. To address this, the model that is presented in this article
 reimplements~\shortcites{deboerSelforganizationVowelSystems2000} model to run its simulations in a scale-free network.
+The work that is presented here is very similar to that of~\shortciteA{ravivRoleSocialNetwork2020}, who investigated the role of social
+network structure in the emergence of linguistic structure and also compared fully connected networks to scale-free networks.
 
 Scale-free networks are networks whose degree distribution follows a power law. Such networks consist of two types of
 nodes: nodes with a high degree called `hubs' and nodes with a small degree. While many real life networks were thought
@@ -87,16 +88,16 @@ internet~\shortcite{faloutsosPowerlawRelationshipsInternet1999} and some social 
 papers~\shortcite{newmanStructureScientificCollaboration2001}.
 In the context of modelling a population, the idea of social networks following a scale-free structure is interesting.
 Even though a network of, for example, co-authorship in mathematical papers is not one in which phonology plays an
-important role, investigating what happens when an agent-based model that is designed to model a population of
+important role, investigating what happens when an agent-based model that is designed to model a fully connected population of
 communicating agents is adapted to run its simulations in such a network, should prove to be insightful. This is
 exactly the case for the~\shortcites{deboerSelforganizationVowelSystems2000} model. The reimplementation of this model
-that is presented in this article shows that the ad hoc methods
-that~\shortciteA{deboerSelforganizationVowelSystems2000} uses to model agents introduces a model-specific bias.
-Insights into how the model can be adjusted to generalise to more realistic networks are gained through a number of
+that is presented in this article shows that emergence is different in scale-free populations.
+While in fully connected populations, population size does not influence convergence, in scale-free populations this is not the case.
+Insights into the influence of network structure on emergence are gained through a number of
 experiments.
 
 In what follows, Section~\ref{sec:SF} gives an in depth discussion on scale-free networks, the methods that can be used
-to generate them and their . Subsequently, Section~\ref{sec:methods} repeats the architecture
+to generate them and how they can be related to real life networks. Subsequently, Section~\ref{sec:methods} repeats the architecture
 of~\shortcites{deboerSelforganizationVowelSystems2000} model and the adjustments that are made for it to run its
 simulations in scale-free networks. Afterwards, Section~\ref{sec:exp} establishes a number of experiments of which
 Section~\ref{sec:discus} discusses the results. Section~\ref{sec:conclusion} concludes the article with a number of
@@ -151,8 +152,8 @@ well. Take, for example, a university community consisting of professors and stu
 network seems like an adequate depiction of the underlying network. On the other hand, a much smaller community of
 hunter-gatherers might be more accurately modelled by a fully connected network. By analysing a variety of real life
 networks,~\shortciteA{broidoScalefreeNetworksAre2019} came to the conclusion that social networks are at best `weakly'
-scale-free. Nevertheless, making models such as those by~\shortciteA{deboerSelforganizationVowelSystems2000}
-and~\shortciteA{oudeyerSelfOrganizationSpeechSounds2005} run their simulations in large and complex social networks
+scale-free. Nevertheless, adapting models such as those of~\shortciteA{deboerSelforganizationVowelSystems2000}
+and~\shortciteA{oudeyerSelfOrganizationSpeechSounds2005} to run their simulations in large and complex social networks
 would result in incorrect representations of reality. When sound systems started emerging for the first time, social
 networks were surely much smaller and simpler than those analysed by~\shortciteA{broidoScalefreeNetworksAre2019}.
 Similarly to how language is said to be the result of the co-evolution of biological and cultural
@@ -161,34 +162,25 @@ society are two concurrent evolutionary processes that influence each other. The
 system in a fixed network structure is not realistic. A more realistic introduction of network structure into models
 that investigate the emergence of sound systems would require network structure to evolve as well. This does not mean
 that looking at what happens when a particular fixed network structure is added to a model that investigates the
-emergence of vowel systems is entirely useless. While the speeds at which language and societal structure evolve are
+emergence of vowel systems is entirely useless. While the speeds at which language and societal structure co-evolve are
 likely to be much more comparable than those of biological and cultural inheritance, fixing network structure in a
 model can still provide insights into one direction of the co-evolution, namely, the influence of network structure on
 the evolution of language.
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\textwidth]{figures/simulation_diagram.pdf}
-    \caption{Graphical representation of the steps that are executed during a simulation.}
-    \label{fig:model}
-\end{figure}
-
 \section{Methodology\label{sec:methods}}
 Aside from two changes, the model\footnote{The source code of the model can be found on GitHub:
     \url{https://github.com/wulfdewolf/ProjectEoS}} that is presented here is exactly the same as that
-of~\shortciteA{deboerSelforganizationVowelSystems2000}. Originally, the model was implemented in C++ and while this did
+of~\shortciteA{deboerSelforganizationVowelSystems2000}. Originally, the model was implemented in $C$++ and while this did
 not change, the model was reimplemented for compatibility reasons. The two aspects that were adapted in  the first
 model are the following: the network architecture in which the simulations run and the bark-to-hertz and hertz-to-bark
 conversions.
 
-Figure~\ref{fig:model} gives a graphical representation of the steps that are executed during a simulation. Each
-iteration starts by selecting a random agent $A$ from the complete population. Agent $A$ is the \textit{sender} of the
-iteration. With a certain probability, agent $A$ is allowed to add a new distributed vowel to their repertoire.
+Figure~\ref{fig:model} gives a graphical representation of the steps that are executed during a simulation. Every agent A is separately chosen
+to be the \textit{sender} of the iteration. With a certain probability, agent $A$ is allowed to add a new distributed vowel to their repertoire.
 The distribution of vowels is implemented just as it was by~\shortciteA{deboerSelforganizationVowelSystems2000}: by
 maximising the distance to all other vowels. Subsequently, every agent merges its vowels that are too alike until no merges
-are possible. The merging threshold is $0.17$ in articulatory space and $\frac{log(1+noise)}{0.1719} - \frac{log(1-noise}{0.1719}$,
-defined by~\shortciteA{deboerSelforganizationVowelSystems2000} to be the maximum distance
-a vowel can be shifted by ambient noise, in acoustic space.
+are possible. The merging threshold is $0.17$ in articulatory space and $\frac{log(1+noise)}{0.1719} - \frac{log(1-noise}{0.1719}$, in acoustic space.
+\shortciteA{deboerSelforganizationVowelSystems2000} defines these values to be the maximum distance a vowel can be shifted by ambient noise.
 After merging, a random neighbour $B$ of agent $A$ is chosen to be the receiver of the iteration.
 Originally,~\shortciteA{deboerSelforganizationVowelSystems2000} chose the receiver agent as a random agent from the
 complete population, thereby modelling a fully connected network. Once a sender and a receiver have been chosen, an
@@ -210,6 +202,13 @@ and with probability $\alpha$, every agent is allowed to remove the bad vowels f
 Vowels that have been used at least 5 times and have a success rate $< \beta_H$ (hard success threshold) are removed. As mentioned, the network
 that determines an agent's neighbours is generated using Algorithm~\ref{alg:PA}. Synthesising, shifting vowels and
 distance measures are all implemented as they were by~\shortciteA{deboerSelforganizationVowelSystems2000}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/simulation_diagram.pdf}
+    \caption{Graphical representation of the steps that are executed during a simulation.}
+    \label{fig:model}
+\end{figure}
 
 The bark-to-hertz and hertz-to-bark conversions that were implemented
 by~\shortciteA{deboerSelforganizationVowelSystems2000} are interpolations based on data from other papers. The second
@@ -310,25 +309,26 @@ This is all repeated here as well.
 \subsection{Emergence of a vowel system}
 Figure~\ref{subfig:FC_res} gives the emergence of a vowel system in a fully connected population of 20 agents under $10\%$ acoustic noise.
 The prototypes of the agents' vowels are combined and plotted in the $F_1-F'_2$ space. The combined repertoires are shown after 1, 25, 100 and 500 games per agent.
-After 1 imitation game per agent it can be seen that the vowels are more or less evenly distributed across the vowel space. There is already some tendency to cluster.
+After 1 imitation game per agent it can be seen that the vowels are distributed across the vowel space. There is already some tendency to cluster.
 This corresponds to the results in~\shortcite{deboerSelforganizationVowelSystems2000} and is due to the fact that agents start out with an empty repertoire and
 random vowels are inserted to get the imitation games started. The receiver agents try to imitate utterances as good as possible and this causes the early clusters.
-After 25 imitation games per agent, the clustering has become more promounced, three to four clusters seem to form. At this point clusters will start compacting.
-However, there still seem to be only 3 to 4 clusters and the vowel space has space for extra vowels.
-After 100 imitation games per agent, the clusters start to become compact and the vowel space has become more filled.
+After 25 imitation games per agent, the clustering has become more pronounced, two to three clusters seem to form. At this point clusters will start compacting.
+However, there still seem to be only two to three clusters and the vowel space has space for extra vowels.
+After 100 imitation games per agent, some clusters have become more compact and the vowel space has become more filled.
 Lastly, after 500 games per agent, the clusters are all tightly packed and some additional clusters have been established.
 At this point, the vowel system is stable to some degree. New clusters can still be formed and the existing clusters move around but generally the vowel system remains the same.
 These results correspond to those of~\shortciteA{deboerSelforganizationVowelSystems2000}.
 
 Figure~\ref{subfig:BA_res} depicts the same results but for the scale-free model.
-While the situations after 1 and 25 imitation games seem to roughly correspond to those of the fully connected model, after 100 imitation games, the clusters still seem
+While the situations after 1, 25, and 100 imitation games seem to roughly correspond to those of the fully connected model, after 500 imitation games, the clusters still seem
 to struggle to become compact. Even after 500 imitation games per agent some of the clusters still consist of subclusters.
 This can surely be a result of the scale-free architecture of the population.
 The hubs that a scale-free network contains make compacting the clusters more difficult.
-A hypothesis for the cause of this is that inter-hub communication can keep a hub-specific variant of a vowel in tact in such a way that inter-hub
+A hypothesis for the cause of this is that intra-hub communication can keep a hub-specific variant of a vowel in tact in such a way that inter-hub
 communication using this vowel is still succesful. Such a phenomenon would model the existence of dialects in the real world.
 However, more experiments need to be conducted to verify such an hypothesis.
-Aside from the non-perfectly compacted clusters, the results for a scale-free population seem to correspond to the results for a fully population.
+Aside from the non-perfectly compacted clusters, the results for a scale-free population seem to correspond to the results for a fully connected population.
+This matches with the results of~\shortciteA{ravivRoleSocialNetwork2020}.
 
 \begin{figure}[t]
     \centering
@@ -375,15 +375,16 @@ In a second verification,~\shortciteA{deboerSelforganizationVowelSystems2000} co
 
 Figure~\ref{subfig:FC_stats} shows the distributions of the three measures for a fully connected population, these results were obtained by averaging of 1000 simulations of 500 imitation games per
 agent each. The average success is always very high, it ranges between 0.90 and 1.00 and the distribution is skewed to the left. The size distribution shows various average repertoire sizes and clear
-peaks at integer values of the sizes 5 to 9. This is because the population's agents tend to have the same number of vowels in their repertoires. Therefore, the vowel systems that emerged can be
-assumed to be uniform among all agents. However, the simulations did not always end with the a uniform vowel system of the same size. In addition, there is an obvious peak for vowel systems that
+peaks at integer values of the sizes 6 to 8. This is because the population's agents tend to have the same number of vowels in their repertoires. Therefore, the vowel systems that emerged can be
+assumed to be uniform among all agents. However, the simulations did not always end with a vowel system of the same size. In addition, there is an obvious peak for vowel systems that
 contain 7 vowels. Just as in~\shortcite{deboerSelforganizationVowelSystems2000}, this can be changed by increasing or decreasing the noise.
 Lastly, the energy distribution shows peaks as well. These correspond to the different sizes of vowel systems and to their different configurations. The distribution is very similar to that of
 \shortciteA{deboerSelforganizationVowelSystems2000} and thus the emerged vowel systems can be asumed to be optimal and, in some way, realistic.
 In general, the results correspond to those of~\shortciteA{deboerSelforganizationVowelSystems2000}.
 
 Figure~\ref{subfig:BA_stats} shows the distributions of the three measures for a scale-free population.
-The same observations can be made. This matches the emerged results.
+Consistent with the results of the previous sections, the same observations can be made. This also matches with the results
+of~\shortciteA{ravivRoleSocialNetwork2020}.
 
 \begin{figure}[t]
     \centering
@@ -409,10 +410,10 @@ The same observations can be made. This matches the emerged results.
         \textwidth % width of caption
     ]%
     {%
-        \includegraphics[scale=0.23]{figures/plots/exp2/100/1.pdf}
-        \includegraphics[scale=0.23]{figures/plots/exp2/100/25.pdf}
-        \includegraphics[scale=0.23]{figures/plots/exp2/100/100.pdf}
-        \includegraphics[scale=0.23]{figures/plots/exp2/100/500.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/50/1.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/50/25.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/50/100.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/50/500.pdf}
     }%
     \\\bigskip
     \subcaptionbox[Short Subcaption]{%
@@ -423,10 +424,10 @@ The same observations can be made. This matches the emerged results.
         \textwidth % width of caption
     ]%
     {%
-        \includegraphics[scale=0.23]{figures/plots/exp2/300/1.pdf}
-        \includegraphics[scale=0.23]{figures/plots/exp2/300/25.pdf}
-        \includegraphics[scale=0.23]{figures/plots/exp2/300/100.pdf}
-        \includegraphics[scale=0.23]{figures/plots/exp2/300/500.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/1.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/25.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/100.pdf}
+        \includegraphics[scale=0.23]{figures/plots/exp2/100/500.pdf}
     }%
     \caption{Combined vowel repertoires of a scale-free population of various sizes after 1, 25, 100, and 500
         imitation games per agent.}
@@ -439,8 +440,8 @@ The same observations can be made. This matches the emerged results.
             \hline
             \textbf{Population size} & \textbf{Success distribution} & \textbf{Size distribution} & \textbf{Energy distribution} \\ \hline
             20                       & 0.9643 $\pm$ 0.01298          & 7.2685 $\pm$ 0.7670        & 4.4003 $\pm$ 1.0709          \\ \hline
-            100                      & 0.9437 $\pm$ 0.01501          & 7.3340 $\pm$ 0.5989        & 4.3176 $\pm$ 0.7761          \\ \hline
-            300                      & 0.9346 $\pm$ 0.01273          & 7.6594 $\pm$ 0.4462        & 4.6592 $\pm$ 0.6068          \\ \hline
+            50                       & 0.9523 $\pm$ 0.01654          & 7.2133 $\pm$ 0.7047        & 4.2063 $\pm$ 0.8989          \\ \hline
+            100                      & 0.9441 $\pm$ 0.01667          & 7.2474 $\pm$ 0.6507        & 4.1898 $\pm$ 0.7973          \\ \hline
         \end{tabular}%
     }
     \caption{Distribution of statistics for 1000 simulations in a scale-free population of various sizes after 500 imitation games
@@ -449,13 +450,36 @@ The same observations can be made. This matches the emerged results.
 \end{table}
 
 \subsection{Sensitivity to population size}
-Figure~\ref{fig:res_2} gives the emergence of vowel systems in a scale-free population of 20, 100, and 300 agents under $10\%$ acoustic noise.
+Figure~\ref{fig:res_2} gives the emergence of vowel systems in a scale-free population of 20, 50, and 100 agents under $10\%$ acoustic noise.
 Accompanying it is Table~\ref{tab:stats_2}, which gives the parameters of the distributions of the three measures averaged over 1000 simulations, 500 imitation
-games per agent each. Two observations can be made here. Firstly, the random dispersion of the vowels after 1 imitation game per agent in the population of 300
-agents gives a good sketch of the form of the vowel space. Secondly, in the plots for the larger populations, an almost line-like pattern shows.
-In the right-most plot for the population of 300 agents this gives the impression that the vowel systems have not stabilised yet. However,
+games per agent each. Three observations can be made here. Firstly, the random dispersion of the vowels after 1 imitation game per agent in the population of 100
+agents gives a good sketch of the form of the vowel space. Secondly, in the plots for the larger populations, almost line-like patterns show.
+These can be accounted to the discrete steps that are taken when agents move vowels closer to another vowel. The implementation of this process was taken
+from~\shortciteA{deboerSelforganizationVowelSystems2000} and consists of generating a number of neighbouring articulatory configurations, synthesising them and selecting the one
+that is closest to the target vowel. Lastly, and most importantly, the larger populations seem to not be able to converge after 500 imitation games per agent.
+The success, size, and energy distributions show interesting results. For the populations of 50 and 100 agents, the average repertoire size was found to also peak at non-integer values, hence, the
+larger the population, the harder it is for the model to converge to a population where every agent has the same vowel repertoire.
+This seems to also be reflected by the success and energy distributions, they seem to lie lower than those of the smaller population.
+However, for both the population of 50 and 100 agents, according to the Kolmogorov-Smirnov test, this is only significant for the success distributions ($p<0.01$ for both).
+This constrasts with what~\shortciteA{deboerSelforganizationVowelSystems2000} found for fully connected populations.
+In such populations, the success statistic is comparable for different population sizes and the repertoire size was found to grow with the population size.
+For scale-free populations this seems to not be the case. Intuitively, this is logical. The larger a scale-free population is, the more thightly intra-connected hubs exist, but the smaller
+the probability of inter-hub communication becomes. Therefore, it becomes much more difficult to propagate vowels through out the network.
+This matches the results of~\shortciteA{ravivLargerCommunitiesCreate2019}.
+In some way this is realistic, because if it were otherwise, there would probably only exist one universal language in the world.
 
 \section{Conclusions\label{sec:conclusion}}
+A reimplementation of the model of~\shortciteA{deboerSelforganizationVowelSystems2000} that implements a scale-free network is presented.
+Through a number of experiments it was found that for smaller populations, the models are similar. However, in larger populations it becomes more
+difficult for the scale-free model to converge. It was shown that scale-free structure in a population makes it more difficult for the population to agree on a single sound system.
+
+As a follow-up to this study, various different network architectures could be implemented to verify their influence on convergence. Particularly interesting could be to hand-tailor
+network architectures to specific communities~\shortcite{willCombiningSocialNetwork2020}. Additionally, adding a dynamic aspect to the network structure should be interesting as
+well~\shortcite{skyrmsDynamicModelSocial2000,sekaraFundamentalStructuresDynamic2016}.
+Lastly, while the results here matched those of~\shortciteA{ravivRoleSocialNetwork2020} and~\shortciteA{ravivLargerCommunitiesCreate2019}, the emphasis of these articles lies on the
+\textit{systematicity} of the emerged languages in different network architectures. Analysing the systematicity of vowel systems such as those used in this article might be difficult as the vowels
+are
+only used in a hollistic way. However, it might be interesting to do so using models that allow for combinatorial structure such as those of~\shortciteA{deboerMultiAgentSimulationsEvolution2010}.
 
 \bibliography{refs}
 \end{document}
