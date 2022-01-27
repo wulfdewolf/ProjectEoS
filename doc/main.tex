@@ -71,8 +71,8 @@ by~\shortciteA{oudeyerSelfOrganizationSpeechSounds2005} and~\shortciteA{deboerMu
 so successfully while also investigating other questions such as whether or not agents should already possess the ability to imitate
 and whether combinatorial structure emerges when instead of single vowels, sequences of vowels are
 modelled. A common factor in the older models and even in most of the newer models is the assumption that every agent
-regularly communicates with every other agent. In reality such fully connected networks are only found in very small
-communities or in families. Therefore, these models might not capture dynamics that are present in large real life
+regularly communicates with every other agent. In reality, such fully connected networks are only found in very small
+communities or in families. Therefore, these models might not capture dynamics that are present in real life
 populations. To address this, the model that is presented in this article
 reimplements~\shortcites{deboerSelforganizationVowelSystems2000} model to run its simulations in a scale-free network.
 The work that is presented here is very similar to that of~\shortciteA{ravivRoleSocialNetwork2020}, who investigated the role of social
@@ -97,14 +97,14 @@ Insights into the influence of network structure on emergence are gained through
 experiments.
 
 In what follows, Section~\ref{sec:SF} gives an in depth discussion on scale-free networks, the methods that can be used
-to generate them and how they can be related to real life networks. Subsequently, Section~\ref{sec:methods} repeats the architecture
+to generate them, and how they can be related to real life networks. Subsequently, Section~\ref{sec:methods} repeats the architecture
 of~\shortcites{deboerSelforganizationVowelSystems2000} model and the adjustments that are made for it to run its
 simulations in scale-free networks. Afterwards, Section~\ref{sec:exp} establishes a number of experiments of which
 Section~\ref{sec:discus} discusses the results. Section~\ref{sec:conclusion} concludes the article with a number of
 conclusions and possible future work.
 
 \section{Scale-free networks\label{sec:SF}}
-Scale-free networks are networks whose degree distribution asymptotically follows a power law. In a pure scale-free
+A scale-free networks is a network whose degree distribution asymptotically follows a power law. In a pure scale-free
 network the probability of a node to have $k$ edges to other nodes is defined as follows:
 \begin{align}
     P(k) \sim k^{-\gamma}
@@ -115,7 +115,7 @@ notions of evidence in a set of categories which are not repeated here. For the 
 know that the used scale-free networks belong to the ``strongest'' category, which is due to the method that is used to
 generate them. The scale-free networks in this article are generated using the most known mechanism to do so, called
 preferential attachment~\shortcite{albertStatisticalMechanicsComplex2002}. The preferential attachment mechanism to
-generate a scale-free network of size $N$ is given by Algorithm~\ref{alg:PA}.
+generate a scale-free network of size $N$ is given by Algorithm~\ref{alg:PA}:
 
 \begin{algorithm}
     \caption{Preferential attachment \protect\shortcite{albertStatisticalMechanicsComplex2002}}\label{alg:PA}
@@ -124,9 +124,9 @@ generate a scale-free network of size $N$ is given by Algorithm~\ref{alg:PA}.
         \While{$net.size() < N$}
         \State $A \gets net.new\_node();$
         \State $count \gets 4;$
-        \While{$count != 0$}
+        \While{$count \neq 0$}
         \State $B \gets net.random\_node();$
-        \If{$!net.connected(A,B)$}
+        \If{$not(net.connected(A,B))$}
         \State $net.connect(A,B) \textbf{ with probability } \frac{B.degree}{net.total\_degree}$
         \EndIf
         \EndWhile
@@ -154,7 +154,7 @@ hunter-gatherers might be more accurately modelled by a fully connected network.
 networks,~\shortciteA{broidoScalefreeNetworksAre2019} came to the conclusion that social networks are at best `weakly'
 scale-free. Nevertheless, adapting models such as those of~\shortciteA{deboerSelforganizationVowelSystems2000}
 and~\shortciteA{oudeyerSelfOrganizationSpeechSounds2005} to run their simulations in large and complex social networks
-would result in incorrect representations of reality. When sound systems started emerging for the first time, social
+would result in incorrect representations of reality. When sound systems started to emerge for the first time, social
 networks were surely much smaller and simpler than those analysed by~\shortciteA{broidoScalefreeNetworksAre2019}.
 Similarly to how language is said to be the result of the co-evolution of biological and cultural
 inheritance~\shortcite{deboerBiologyCultureCoevolutionFinite2018}, the evolution of language and the structure of
@@ -189,8 +189,8 @@ agent $B$ as an utterance $v'_A$, thereby adding a noise shift. If agent $A$'s r
 initialised with a completely random vowel. Agent $B$ hears the synthesised vowel $v'_A$ and finds the most resembling
 vowel $v_B$ in their repertoire, synthesises it, and sends it to agent $A$ as an utterance $v'_B$, once more, adding a
 noise shift. Agent $A$ hears agent $B$'s response and finds the most resembling vowel in their repertoire. If
-this vowel is the original $v_A$ then the imitation game was successful and agent $A$ sends \textit{True} to agent $B$,
-otherwise the imitation game failed and agent $A$ sends \textit{False} to agent $B$. Lastly, agent $B$ receives the
+this vowel is the original $v_A$ then the imitation game is successful and agent $A$ sends \textit{True} to agent $B$,
+otherwise the imitation game fails and agent $A$ sends \textit{False} to agent $B$. Lastly, agent $B$ receives the
 success boolean and does the following. If it is \textit{True}, agent $B$ moves $v_B$ closer to $v_A$, since by
 uttering $v_B$ agent $A$ was able to understand agent $B$. If it is \textit{False} and the success rate of $v_B$ is $>\beta_S$ (soft success threshold)
 then agent $B$ moves $v_B$ away from $v_A$ and adds a new vowel as close as possible to $v_A$. The reasoning
@@ -326,7 +326,7 @@ This can surely be a result of the scale-free architecture of the population.
 The hubs that a scale-free network contains make compacting the clusters more difficult.
 A hypothesis for the cause of this is that intra-hub communication can keep a hub-specific variant of a vowel in tact in such a way that inter-hub
 communication using this vowel is still succesful. Such a phenomenon would model the existence of dialects in the real world.
-However, more experiments need to be conducted to verify such an hypothesis.
+However, more experiments need to be conducted to verify such a hypothesis.
 Aside from the non-perfectly compacted clusters, the results for a scale-free population seem to correspond to the results for a fully connected population.
 This matches with the results of~\shortciteA{ravivRoleSocialNetwork2020}.
 
@@ -373,7 +373,7 @@ vowel systems, the average number of succesful imitation games, and the energy a
 therefore choses to consider vowel systems with near-minimal energy to be realistic, this is done here as well.
 In a second verification,~\shortciteA{deboerSelforganizationVowelSystems2000} compares the emerged vowel systems to real life vowel systems, this is not repeated here.
 
-Figure~\ref{subfig:FC_stats} shows the distributions of the three measures for a fully connected population, these results were obtained by averaging of 1000 simulations of 500 imitation games per
+Figure~\ref{subfig:FC_stats} shows the distributions of the three measures for a fully connected population, these results were obtained by averaging over 1000 simulations of 500 imitation games per
 agent each. The average success is always very high, it ranges between 0.90 and 1.00 and the distribution is skewed to the left. The size distribution shows various average repertoire sizes and clear
 peaks at integer values of the sizes 6 to 8. This is because the population's agents tend to have the same number of vowels in their repertoires. Therefore, the vowel systems that emerged can be
 assumed to be uniform among all agents. However, the simulations did not always end with a vowel system of the same size. In addition, there is an obvious peak for vowel systems that
@@ -383,7 +383,7 @@ Lastly, the energy distribution shows peaks as well. These correspond to the dif
 In general, the results correspond to those of~\shortciteA{deboerSelforganizationVowelSystems2000}.
 
 Figure~\ref{subfig:BA_stats} shows the distributions of the three measures for a scale-free population.
-Consistent with the results of the previous sections, the same observations can be made. This also matches with the results
+Just as in the previous sections the same observations can be made. This again matches with the results
 of~\shortciteA{ravivRoleSocialNetwork2020}.
 
 \begin{figure}[t]
